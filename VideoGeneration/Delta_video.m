@@ -4,7 +4,7 @@ close all;
 
 
 SEPARABLE_DATA = 1;
-NONSEPARABLE_DAT = 0;
+NONSEPARABLE_DATA = 0;
 
 %Video object
 vid = VideoWriter('2D_delta.avi');
@@ -24,6 +24,7 @@ else
     int = 'tex';
 end
 
+mode = SEPARABLE_DATA;
 switch mode
     case SEPARABLE_DATA
         % Easily separable dataset
@@ -44,7 +45,7 @@ switch mode
         tit = 'Non-Separable Data';
         
         %Video object
-        vid = VideoWriter('2D_delta_Non_ Separable.avi');
+        vid = VideoWriter('2D_delta_Non_Separable.avi');
 
         %Main options
         vid.FrameRate = 10;  % Default 30
@@ -58,7 +59,7 @@ end
 
 % Initialization
 eta = 0.001;
-X = [patterns; ones(1, size(patterns, 2))];
+X = [patterns; ndata];
 W = randn(outsize, insize+1);
 epochs = 20;
 
