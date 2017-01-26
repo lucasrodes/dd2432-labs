@@ -48,8 +48,8 @@ epochs = 20;
 
 for i = 0:epochs
     % Delta Rule, update weights
-    deltaW = -eta*( W*X - targets)*X';
-    W = W + deltaW;
+    delta_W = -eta*( W*X - targets)*X';
+    W = W + delta_W;
         
     % Prepare plots
     p = W(1, 1:2);
