@@ -1,8 +1,11 @@
 % This script runs the delta rule
 clear;
 
+% "Global" variables
 SEPARABLE_DATA = 0;
 NONSEPARABLE_DATA = 1;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set to 1 for LaTeX labeling, 0 for default labeling
 LATEX = 1;
@@ -32,7 +35,7 @@ end
 [outsize, ndata] = size(targets);
 
 % Input matrix with ones (bias)
-X = [patterns; ones(1, size(patterns, 2))];
+X = [patterns; ones(1, ndata)];
 
 % Learning parameter
 eta = 0.001;
