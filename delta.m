@@ -56,7 +56,9 @@ for i = 0:epochs
     hold on;
     plot([p(1), p(1)]*k + [-p(2), p(2)]/l, ...
         [p(2), p(2)]*k + [p(1), -p(1)]/l, 'k-', 'LineWidth', 3);
-    title(tit, 'FontSize', 14,'Interpreter',int);
+    title(tit, 'FontSize', 16,'Interpreter',int);
+    h_legend = legend('+1', '-1');
+    set(h_legend,'FontSize',14,'Interpreter',int, 'Location', 'southeast');
     hold off;
     axis([-2, 2, -2, 2], 'square');
     drawnow;
