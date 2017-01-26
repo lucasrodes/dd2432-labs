@@ -1,3 +1,4 @@
+% This script runs the delta rule
 clear;
 
 % Easily separable dataset
