@@ -20,10 +20,6 @@ z=exp(-x_full.*x_full*0.1) * exp(-y_full.*y_full*0.1)' - 0.5;
 [z_row, z_col] = size(z);
 ndata = z_row*z_col;
 
-figure(1);
-subplot(1,2,1);
-mesh( x_full, y_full, z);
-axis([-5 5 -5 5 -0.7 0.7]);
 
 % Parse ann value
 targets = reshape(z, 1, ndata);
@@ -39,10 +35,6 @@ y = targets(:, permute);
 x = x(:, 1:n);
 y = y(:, 1:n);
 [p_row, p_col] = size(x);
-
-hold on;
-scatter3(x(1,:), x(2,:), y, 'r');
-hold off;
 
 % Initialize ANN value
 error = [];
@@ -76,8 +68,6 @@ for i = 1:epochs
     error = [error ; sum((y - out).^2) / sum(y .^2)];
     
     if mod(i, 10) == 0
-        figure(1);
-        subplot(1,2,2);
         % Forward pass test
         hin = w * [patterns; ones(1, ndata)];
         hout = [phi(hin); ones(1, ndata)];
