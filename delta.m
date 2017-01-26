@@ -1,33 +1,64 @@
 % This script runs the delta rule
 clear;
 
-% Easily separable dataset
-%[patterns, targets] = sepdata;
+SEPARABLE_DATA = 0;
+NONSEPARABLE_DAT = 1;
 
-% Non separable dataset
-[patterns, targets] = nsepdata;
+% Set to 1 for LaTeX labeling, 0 for default labeling
+LATEX = 1;
+
+if LATEX
+    int = 'latex';
+else
+    int = 'tex';
+end
+
+
+% Choose data set to be used
+mode = SEPARABLE_DATA;
+
+switch mode
+    case SEPARABLE_DATA
+        % Easily separable dataset
+        [patterns, targets] = sepdata;
+        tit = 'Separable Data';
+    otherwise
+        % Non separable dataset
+        [patterns, targets] = nsepdata;
+        tit = 'Non-Separable Data';
+end
+
+% Size of input/output
+[insize, ~] = size(patterns);
+[outsize, ndata] = size(targets);
 
 % Initialization
 eta = 0.001;
 X = [patterns; ones(1, size(patterns, 2))];
-w = randn(1, size(X, 1));
+W = randn(outsize, insize+1);
 epochs = 20;
 
 for i = 0:epochs
-    deltaW = -eta*( w*X - targets)*X';
-    w = w + deltaW;
+    % Delta Rule, update weights
+    deltaW = -eta*( W*X - targets)*X';
+    W = W + deltaW;
         
-    % Show
-    p = w(1, 1:2);
-    k = -w(1, size(patterns, 1)+1) / (p*p');
+    % Prepare plots
+    p = W(1, 1:2);
+    k = -W(1, size(patterns, 1)+1) / (p*p');
     l = sqrt(p*p');
-    plot (patterns(1, find(targets>0)), ...
-        patterns(2, find(targets>0)), '*', ...
-        patterns(1, find(targets<0)), ...
-        patterns(2, find(targets<0)), '+', ...
-        [p(1), p(1)]*k + [-p(2), p(2)]/l, ...
-        [p(2), p(2)]*k + [p(1), -p(1)]/l, '-');
+    
+    % Plot results
+    plot (patterns(1, targets>0), ...
+        patterns(2, targets>0), '*', ...
+        patterns(1, targets<0), ...
+        patterns(2, targets<0), '+');
+    hold on;
+    plot([p(1), p(1)]*k + [-p(2), p(2)]/l, ...
+        [p(2), p(2)]*k + [p(1), -p(1)]/l, 'k-', 'LineWidth', 3);
+    title(tit, 'FontSize', 14,'Interpreter',int);
+    hold off;
     axis([-2, 2, -2, 2], 'square');
     drawnow;
-    pause(0.5);
+    pause(0.25);
 end
