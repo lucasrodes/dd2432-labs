@@ -1,24 +1,18 @@
-function Delta_video(mode)
+function delta_video(mode, VidName, res)
 % This script runs the delta rule
-clear;
-
-% "Global" variables
-SEPARABLE_DATA = 0;
-NONSEPARABLE_DATA = 1;
+close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set to 1 for LaTeX labeling, 0 for default labeling
 LATEX = 1;
-% Choose data set to be used
-mode = NONSEPARABLE_DATA;
 
-%Video object
-vid = VideoWriter('2D_delta.avi');
+% Video object
+vid = VideoWriter(['Videos/',VidName]);
 
-%Main options
-vid.FrameRate = 10;  % Default 30
-vid.Quality = 50;    % Default 75
+% Main options
+vid.FrameRate = res(1);  % Default 30
+vid.Quality = res(2);    % Default 75
 open(vid);
 
 if LATEX
@@ -28,31 +22,16 @@ else
 end
 
 switch mode
-    case SEPARABLE_DATA
+    case 0
         % Easily separable dataset
         [patterns, targets] = sepdata;
         tit = 'Separable Data';
-        
-         %Video object
-        vid = VideoWriter('2D_delta_Separable.avi');
-
-        %Main options
-        vid.FrameRate = 10;  % Default 30
-        vid.Quality = 50;    % Default 75
-        open(vid);
         
     otherwise
         % Non separable dataset
         [patterns, targets] = nsepdata;
         tit = 'Non-Separable Data';
         
-        %Video object
-        vid = VideoWriter('2D_delta_Non_Separable.avi');
-
-        %Main options
-        vid.FrameRate = 10;  % Default 30
-        vid.Quality = 50;    % Default 75
-        open(vid);
 end
 
 % Size of input/output
@@ -89,14 +68,14 @@ for i = 0:epochs
     hold on;
     plot([p(1), p(1)]*k + [-p(2), p(2)]/l, ...
         [p(2), p(2)]*k + [p(1), -p(1)]/l, 'k-', 'LineWidth', 3);
-    title(tit, 'FontSize', 20,'Interpreter',int);
-    xlabel('$$x_1$$','Interpreter',int,'FontSize', 20);
-    ylabel('$$x_2$$','Interpreter',int,'FontSize', 20);
+    title(tit, 'FontSize', 16,'Interpreter',int);
+    xlabel('$$x_1$$','Interpreter',int,'FontSize', 16);
+    ylabel('$$x_2$$','Interpreter',int,'FontSize', 16);
     h_legend = legend('+1', '-1');
     set(h_legend,'FontSize',16,'Interpreter',int, 'Location', 'southeast');
     hold off;
     axis([-2, 2, -2, 2], 'square');
-    F = getframe;
+    F = getframe(gcf);
     writeVideo(vid,F);
 end
 

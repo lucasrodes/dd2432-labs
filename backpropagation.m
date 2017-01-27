@@ -77,6 +77,7 @@ for i = steps
     
     % Obtain error
     error(1, i) = sum(sum(abs(sign(out) - targets) ./ 2));
+    
     % Plot error
     plot(steps, error);
     title(['MSE per Epoch - ' tit], 'FontSize', 20,'Interpreter',int);
