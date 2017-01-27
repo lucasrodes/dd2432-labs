@@ -17,6 +17,7 @@ hidden = 4;
 epoch = 500;
 % Choose learning rate
 eta = 0.01;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 if LATEX
@@ -42,7 +43,7 @@ end
 
 % Input matrix with ones (bias)
 X = [patterns; ones(1, ndata)];
-alpha = 0.9;
+alpha = 0.9; % used to average updates and hence avoid noisy updates
 
 % Initialize the weights
 W = randn(hidden, insize+1);
