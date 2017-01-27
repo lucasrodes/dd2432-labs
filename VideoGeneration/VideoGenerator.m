@@ -6,10 +6,10 @@ SEPARABLE_DATA = 1;
 NONSEPARABLE_DAT = 0;
 
 mode = SEPARABLE_DATA;
-Delta_video(mode);
+delta_video(mode);
 
 mode = NONSEPARABLE_DAT;
-Delta_video(mode);
+delta_video(mode);
 
 %% Backpropagation
 mode = SEPARABLE_DATA;

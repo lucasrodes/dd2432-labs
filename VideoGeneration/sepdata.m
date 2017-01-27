@@ -1,6 +1,6 @@
 % function [ patterns, targets ] = sepdata(  )
 %
-% Generates 
+% Generates linear separable data
 function [ patterns, targets ] = sepdata(  )
     A_mean = [1.0, 0.5];
     A_std = 0.5;

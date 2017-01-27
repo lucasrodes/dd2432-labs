@@ -1,3 +1,6 @@
+% function [ patterns, targets ] = nsepdata(  )
+%
+% Generates non linearly-separable data
 function [ patterns, targets ] = nsepdata(  )
     classA(1,:) = [randn(1,50) .* 0.2 - 1.0, randn(1,50) .* 0.2 + 1.0];
     classA(2,:) = randn(1,100) .* 0.2 + 0.3;
