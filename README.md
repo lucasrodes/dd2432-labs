@@ -1,4 +1,2 @@
-# dd2380-labs
-First assignment of the course DD2380 Artificial Neural Networks and other Learning Systems at [KTH](www.kth.se).
-
-Take a look at the report.md for a brief report of the lab results.
+# dd2423-labs
+Assignments of the course [DD2432 Artificial Neural Networks and other Learning Systems](http://www.kth.se/student/kurser/kurs/DD2432?l=en) at [KTH](www.kth.se).
