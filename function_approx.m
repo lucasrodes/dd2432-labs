@@ -10,7 +10,7 @@ n = 40;
 %                                        6 is already good, 
 %                                        1000 is too much because 
 %                                        many weights just go to zero)
-hidden = 6;
+hidden = 50;
 
 % Set to 1 for LaTeX labeling, 0 for default labeling
 LATEX = 1;
@@ -33,7 +33,7 @@ ndata = z_row*z_col;
 
 % Plot the function f(x,y) to approximate
 figure(1);
-subplot(1,2,1);
+subplot(2,2,1);
 mesh( x_full, y_full, z);
 xlabel('x','Interpreter',int,'FontSize', 20);
 ylabel('y','Interpreter',int,'FontSize', 20);
@@ -55,6 +55,9 @@ x = x(:, 1:n);
 y = y(:, 1:n);
 [insize, p_col] = size(x);
 [outsize, ~] = size(y);
+
+% Add noise
+% x = x + randn(insize, p_col);
 
 hold on;
 scatter3(x(1,:), x(2,:), y, 'r');
@@ -110,7 +113,7 @@ for i = steps
         
         % Plot the results using mesh
         figure(1);
-        subplot(1,2,2);
+        subplot(2,2,2);
         zz = reshape(out, z_row, z_col);
         mesh(x_full, y_full, zz);
         axis([-5 5 -5 5 -0.7 0.7]);
@@ -120,17 +123,29 @@ for i = steps
         zlabel('z','Interpreter',int,'FontSize', 20);
         axis([-5 5 -5 5 -0.7 0.7]);
         drawnow;
+        % Plot the error
+        %figure(2);
+        subplot(2,2,3);
+        plot(1:epochs, error);
+        title('MSE per epoch','Interpreter',int,'FontSize', 20);
+        xlabel('Epoch','Interpreter',int,'FontSize', 20);
+        ylabel('Error','Interpreter',int,'FontSize', 20);
+        % Histogram of the weights
+        %figure(3);
+        subplot(2,2,4);
+        hist([V(:);W(:)],100, 'k')
+        title('Value of the weights','Interpreter',int);
     end
 end
 
 % Plot the error
-figure(2);
-plot(1:epochs, error);
-title('MSE per epoch','Interpreter',int,'FontSize', 20);
-xlabel('Epoch','Interpreter',int,'FontSize', 20);
-ylabel('Error','Interpreter',int,'FontSize', 20);
+%figure(2);
+%plot(1:epochs, error);
+%title('MSE per epoch','Interpreter',int,'FontSize', 20);
+%xlabel('Epoch','Interpreter',int,'FontSize', 20);
+%ylabel('Error','Interpreter',int,'FontSize', 20);
 
 % Histogram of the weights
-figure(3);
-hist([V(:);W(:)],100)
-title('Value of the weights','Interpreter',int);
+%figure(3);
+%hist([V(:);W(:)],100)
+%title('Value of the weights','Interpreter',int);
