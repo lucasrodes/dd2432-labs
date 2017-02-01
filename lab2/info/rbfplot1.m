@@ -7,8 +7,11 @@ function rbfplot1(x,y,yd,units, m, sigma2, w)
     hold on;
     scatter(m, zeros(size(m,1),1),'k.');
     grid on;
-    title([' Function y and desired y, RBF-units=' int2str(units)], 'Interpreter', 'latex');
-
+    title([' Function y and desired y, RBF units=' int2str(units)], 'Interpreter', 'latex','FontSize',16);
+    xlabel('$x$','Interpreter', 'latex','FontSize',16);
+    h_legend = legend('Desired Function', 'Approximation Function');
+    set(h_legend,'FontSize',16,'Interpreter','latex');
+    
     subplot(3,1,2);
     hold on;
     t = linspace(min(x), max(x), 10000);
@@ -20,11 +23,13 @@ function rbfplot1(x,y,yd,units, m, sigma2, w)
     hold on;
     scatter(m, zeros(size(m,1),1),'k.');
     grid on;
-    title('RBF units activations', 'Interpreter', 'latex');
+    title('RBF units activations', 'Interpreter', 'latex','FontSize',16);
+    xlabel('$x$','Interpreter', 'latex','FontSize',16);
+    ylabel('$\phi(x)$','Interpreter', 'latex','FontSize',16)
     
     subplot(3,1,3); 
     plot(x,yd-y);
     grid on;
-    title(['Residual, max= ' num2str(max(abs(yd-y)))],'Interpreter', 'latex');
+    title(['Residual, max= ' num2str(max(abs(yd-y)))],'Interpreter', 'latex','FontSize',16);
 end
 
