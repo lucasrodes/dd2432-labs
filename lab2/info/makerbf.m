@@ -15,9 +15,9 @@ xmin=fmin-(fmax-fmin)*margin;
 xmax=fmax+(fmax-fmin)*margin;
 
 global m;
-global var;
+global sigma2;
 global w;
-[m var]=fixrbf1(units,fmin,fmax);
+[m, sigma2]=fixrbf1(units,fmin,fmax);
 
 %Initialize the weight vector with random values
 w=rand(rows(m),1)+0.1;
