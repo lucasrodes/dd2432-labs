@@ -1,0 +1,222 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
+                                                          % if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
+                                                          % paper
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{framed} 
+
+\title{\LARGE \bf
+Radial-Basis Functions and Self Organization}
+
+%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
+%         \thanks{*Use the $\backslash$thanks command to put information here}\\
+%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
+%         University of Twente\\
+%         7500 AE Enschede, The Netherlands\\
+%         {\tt\small h.kwakernaak@autsubmit.com}}
+%         \hspace*{ 0.5 in}
+%         \parbox{3 in}{ \centering Pradeep Misra**
+%         \thanks{**The footnote marks may be inserted manually}\\
+%        Department of Electrical Engineering \\
+%         Wright State University\\
+%         Dayton, OH 45435, USA\\
+%         {\tt\small pmisra@cs.wright.edu}}
+%}
+
+\author{ Federico Baldassarre, Diego Gonz\'alez Mor\'in, Lucas Rod\'es Guirao \\
+KTH Royal Institute of Technology
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{abstract}
+
+
+%\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+In this lab we use Radial Basis Functions (RBF) to approximate some simple functions of one variable. Suppose we have the function $f: \mathbb{R} \to \mathbb{R}$. RBF introduces a hidden layer such that $\hat{f}: \mathbb{R} \to \mathbb{R}^n \to \mathbb{R}$, where $n$ is the number of neurons in the hidden layer. The trick basically consists on mapping an input $x \in \mathbb{R}$ to a new space $\mathbb{R}^n$ using a set of functions $\{\phi_i\}_{i=1}^n$ and then back to $\mathbb{R}$. 
+
+
+The functions used are Gaussians with different means and, possibly, also different variances
+
+$$
+\phi_i(x) = \frac{\exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}{\sum_i \exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}.
+$$
+
+\emph{Radial} comes from the fact that the functions $\{\phi_i\}_{i=1}^n$ operate on distances rather than on the input points themselves. In this regard, the selection of $\{\mu_i\}_{i=1}^n$ is essential and is typically done using K-means or by simply selecting some points from the training set. 
+
+Given an input $x$ the output of the network is
+
+$$
+\hat{f}(x) = \sum_{i=1}^n w_i \phi_i(x).
+$$
+
+
+Thus we can say that the units in the hidden layer work as \emph{basis} in which the function $\hat{f}$ can be expressed. \\
+
+The motivation behind this technique is the fact that in higher dimensional spaces, data is usually linearly separable. \\
+
+Suppose we have a set of patterns $\{x_1, \dots, x_N\}$ and their corresponding real function values $\{f_1, \dots, f_N\}$. While training, the neural network minimizes the error measure
+
+$$
+total~error = \sum_{k=1}^N (\hat{f}_k-f_k)^2.
+$$
+
+\subsection{Computing the weight matrix}
+
+The weights of the network are found by solving the system in (\ref{eq:1}).
+
+\begin{equation}
+\begin{split}
+\phi_1(x_1)w_1 + \phi_2(x_1)w_2 + \dots + \phi_n(x_1)w_n &= f_1 \\
+\phi_1(x_2)w_1 + \phi_2(x_2)w_2 + \dots + \phi_n(x_2)w_n &= f_2 \\
+&\vdots \\
+\phi_1(x_k)w_1 + \phi_2(x_k)w_2 + \dots + \phi_n(x_k)w_n &= f_k \\
+&\vdots \\
+\phi_1(x_N)w_1 + \phi_2(x_N)w_2 + \dots + \phi_n(x_N)w_n &= f_N
+\end{split}
+\label{eq:1}
+\end{equation}
+
+\begin{framed}
+\textbf{Questions}
+\begin{itemize}
+\item \textit{What is the lower bound for the number of training examples, $N$?}
+
+From basic linear algebra, we need at least $n$ equations in a system with $n$ variables. Otherwise, the system is incompatible. Hence, we have that $N\geq n$.
+
+\item \textit{What happens with the error if $N=n$? Why?}
+
+If this is the case, and the system is full-rank, we have that we can find a set of weights $\{w_i\}_{i=0}^n$ such that we perfectly reconstruct the target function, i.e. $\hat{f}_k = f_k$ for all the training samples. Thus we can decrease the error to zero.
+
+\item \textit{Under what conditions, if any, does (\ref{eq:1}) have a solution in this case?}
+
+This happens if the rank per columns and the rank per rows is the same.
+
+\item \textit{During training we use an error measure defined over the training examples. Is it good to use this measure when evaluating the performance of the network? Explain!}
+
+Although we can make the error zero, it does not mean that the network will perform well with unseen data. On the contrary, it might mean that we are overfitting the network and thus it is probable that it will have a poor generalization.
+
+\end{itemize}
+\end{framed}
+
+\subsection{Least Squares}
+
+We write (\ref{eq:1}) as
+
+$$
+\boldsymbol{\Phi}\textbf{w} = \textbf{f},
+$$
+
+where
+
+\begin{equation} \nonumber
+\boldsymbol{\Phi} = 
+\begin{pmatrix}
+\phi_1(x_1) & \phi_2(x_1) & \dots & \phi_n(x_1)\\
+\phi_1(x_2) & \phi_2(x_2) & \dots & \phi_n(x_2) \\
+\vdots & \vdots & \ddots & \vdots \\
+\phi_1(x_N) & \phi_2(x_N) & \dots & \phi_n(x_N)
+\end{pmatrix}
+\end{equation}
+
+and
+
+\begin{equation}
+\textbf{w} = 
+\begin{pmatrix}
+w_1 \\
+w_2 \\
+\vdots \\
+w_n
+\end{pmatrix}.
+\end{equation}
+
+Now our error measure becomes $total~error = || \boldsymbol{\Phi}\textbf{w} - \textbf{f}||^2$, which is minimized by solving $ \boldsymbol{\Phi}^T \boldsymbol{\Phi}\textbf{w} = \boldsymbol{\Phi} \textbf{f}$, i.e.
+
+$$
+\textbf{w}_\text{opt} = (\boldsymbol{\Phi}^T \boldsymbol{\Phi})^{-1}\boldsymbol{\Phi}^T \textbf{f}.
+$$
+
+\subsection{The Delta Rule}
+Sometimes, not all the sample patterns are accessible simultaneously.  If the network operates on a continuous stream of data,  the process of computing the weights changes from the previous case. We now define our error using the expectation
+
+$$
+\xi = expected~error= \textbf{E}\Big[ \frac{1}{2} (f(x) - \hat{f}(x))^2\Big].
+$$
+
+However, since we cannot find an exact expression for $\xi$ we use the instantaneous error as an estimate of $\xi$, i.e.
+
+$$
+\xi \approx \hat{\xi} = \frac{1}{2} (f(x) - \hat{f}(x))^2 = \frac{1}{2} e^2.
+$$
+
+Our goal here is to make $\hat{\xi} \to 0$ as fast as possible. To do so, we take a step $\Delta \textbf{w}$ in the opposite direction of the gradent of the error surface, i.e.
+
+\begin{equation} \nonumber
+\begin{split}
+\Delta \textbf{w} &= -\eta \nabla_\textbf{w} \hat{\xi} \\
+&= -\eta \frac{1}{2}\nabla_\textbf{w}(f(x_k)-\boldsymbol{\Phi}(x_k)\textbf{w})^2 \\
+&= \eta(f(x_k)-\boldsymbol{\Phi}(x_k)^T\textbf{w})\boldsymbol{\Phi}(x_k) \\
+&= \eta e \boldsymbol{\Phi}(x_k) 
+\end{split}
+\end{equation}
+
+where 
+
+\begin{equation} \nonumber
+\boldsymbol{\Phi}(x_k) =
+\begin{pmatrix}
+\phi_1(x_k) \\
+\phi_2(x_k) \\
+\vdots \\
+\phi_n(x_k)
+\end{pmatrix}.
+\end{equation}
+
+$\eta$ is known as the learning rate constant and is essential in order to find a good solution. However its tunining is tricky since depending on its value we might never approach a good solution to the system. In particular, if $\eta$ is too high, noise on the input data might lead to error increase in $\textbf{w}$ instead. However, if $\eta$ is too small we might never achieve the optimum (least squares solution).
+\cite{etzioni2011less}
+
+\section{Supervised Learning of Network Weights}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
