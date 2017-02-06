@@ -7,7 +7,7 @@
 % The algoritm works by moving the closest unit. This is here done batchwise,
 % 
 
-dstcum=var*0;
+dstcum=sigma2*0;
 dfcum=m*0;
 i=rows(data);
 
@@ -35,6 +35,6 @@ figure(h);
 %ploterase(pd);
 clf;
 plotdata2(h,data);
-plotrbf2(h,m,var,p1,p2);
+plotrbf2(h,m,sigma2,p1,p2);
 %plotlines(pd,m,oldm,p1,p2);
 %plotrefresh(pd);
