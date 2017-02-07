@@ -1,0 +1,177 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Artificial Neural Networks and other Learning Systems - Lab 2</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="intro.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Artificial Neural Networks and other Learning Systems - Lab 2</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">1. Introduction</a></li></ul></div><h2>1. Introduction<a name="1"></a></h2><p>In this lab we use Radial Basis Functions (RBF) to approximate some simple functions of one variable. Suppose we have the function <img src="intro_eq10189833827626308418.png" alt="$f: R \to R$">. RBF introduces a hidden layer such that <img src="intro_eq09411618169764277137.png" alt="$\hat{f}: R \to R^n \to R$">, where <img src="intro_eq08984225997457563733.png" alt="$n$"> is the number of neurons in the hidden layer. The trick basically consists on mapping an input <img src="intro_eq01914935130611720496.png" alt="$x \in R$"> to a new space <img src="intro_eq13560274181536256371.png" alt="$R^n$"> using a set of functions <img src="intro_eq14649365033476638149.png" alt="$\{\phi_i\}_{i=1}^n$"> and then back to <img src="intro_eq07665768084639506715.png" alt="${R}$">. The functions used are Gaussians with different means and, possibly, also different variances</p><p><img src="intro_eq08018702599982308809.png" alt="$$&#xA;\phi_i(x) = \frac{\exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}{\sum_i&#xA;\exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}.&#xA;$$"></p><p><i>Radial</i> comes from the fact that the functions <img src="intro_eq14649365033476638149.png" alt="$\{\phi_i\}_{i=1}^n$"> operate on distances rather than on the input points themselves. In this regard, the selection of <img src="intro_eq00651992692839247904.png" alt="$\{\mu_i\}_{i=1}^n$"> is essential and is typically done using K-means or by simply selecting some points from the training set. Given an input <img src="intro_eq12428413953531653171.png" alt="$x$"> the output of the network is</p><p><img src="intro_eq02471325374896593486.png" alt="$$&#xA;\hat{f}(x) = \sum_{i=1}^n w_i \phi_i(x).&#xA;$$"></p><p>Thus we can say that the units in the hidden layer work as <i>basis</i> in which the function <img src="intro_eq04421954360780070852.png" alt="$\hat{f}$"> can be expressed. The motivation behind this technique is the fact that in higher dimensional spaces, data is usually linearly separable. Suppose we have a set of patterns <img src="intro_eq00634241280888151874.png" alt="$\{x_1, \dots, x_N\}$"> and their corresponding real function values <img src="intro_eq15403936903264355063.png" alt="$\{f_1, \dots, f_N\}$">. While training, the neural network minimizes the error measure</p><p><img src="intro_eq01739239666763636889.png" alt="$$&#xA;total~error = \sum_{k=1}^N (\hat{f}_k-f_k)^2.&#xA;$$"></p><p><h3>Computing the weight matrix</h3></p><p>The weights of the network are found by solving the following system</p><p><img src="intro_eq02070413630417467912.png" alt="$$\phi_1(x_1)w_1 + \phi_2(x_1)w_2 + \dots + \phi_n(x_1)w_n = f_1 $$"></p><p><img src="intro_eq13103131466076056399.png" alt="$$\phi_1(x_2)w_1 + \phi_2(x_2)w_2 + \dots + \phi_n(x_2)w_n = f_2 $$"></p><p>...</p><p><img src="intro_eq07276518928136656652.png" alt="$$\phi_1(x_k)w_1 + \phi_2(x_k)w_2 + \dots + \phi_n(x_k)w_n = f_k $$"></p><p>...</p><p><img src="intro_eq13310740079898810935.png" alt="$$\phi_1(x_N)w_1 + \phi_2(x_N)w_2 + \dots + \phi_n(x_N)w_n = f_N$$"></p><p><i><b>Question</b></i> What is the lower bound for the number of training examples, <img src="intro_eq03672095713503266041.png" alt="$N$">?</p><p>From basic linear algebra, we need at least <img src="intro_eq08984225997457563733.png" alt="$n$"> equations in a system with <img src="intro_eq08984225997457563733.png" alt="$n$"> variables. Otherwise, the system is underdefined. Hence, we have that <img src="intro_eq08391019997427355238.png" alt="$N\geq n$">. If the number of samples is smaller than the number of hidden units, some units will end up doing nothing or doing the same thing as other units (i.e. will activate around the same point in the input space)</p><p><i><b>Question</b></i> What happens with the error if <img src="intro_eq17073082817529274260.png" alt="$N=n$">? Why?</p><p>If this is the case, and the system is full-rank, we have that we can find a set of weights <img src="intro_eq14043390771244569298.png" alt="$\{w_i\}_{i=0}^n$"> such that we perfectly reconstruct the target function, i.e. <img src="intro_eq13337464295579317661.png" alt="$\hat{f}_k = f_k$"> for all the training samples. Thus we can decrease the error to zero. From the network perspective what will happen is that every RBF unit will "specialize" in one single training point. For this reason, every time we feed an input there will be only one unit active and the others will be off, making it trivial for the following layer to classify the point. However, this is not a desirable behavior, because the network will have overfitted on the training points and will underperform on unseen data.</p><p><i><b>Question</b></i> Under what conditions, if any, does (\ref{eq:1}) have a solution in this case?</p><p>This happens if the rank per columns and the rank per rows is the same.</p><p><i><b>Question</b></i> During training we use an error measure defined over the training examples. Is it good to use this measure when evaluating the performance of the network? Explain! Although we can make the error zero on the training set, it does not mean that the network will perform well with unseen data. On the contrary, we risk to overfit the network and reduce its generalization power.</p><p><h3>Least Squares</h3></p><p>Now our error measure becomes <img src="intro_eq15248378534314171349.png" alt="$total~error = ||?{\Phi}{w} - \textbf{f}||^2$">, which is minimized by solving <img src="intro_eq01737576511381152427.png" alt="$?{\Phi}^T?{\Phi}\textbf{w} = {\Phi} \textbf{f}$">, i.e.</p><p><img src="intro_eq04158222670908466318.png" alt="$$&#xA;\textbf{w}_{opt} = ({\Phi}^T?{\Phi})^{-1}{\Phi}^T?\textbf{f}.&#xA;$$"></p><p><h3>The Delta Rule</h3></p><p>Sometimes, not all the sample patterns are accessible simultaneously.  If the network operates on a continuous stream of data,  the process of computing the weights changes from the previous case. We now define our error using the expectation</p><p><img src="intro_eq08290845061254720030.png" alt="$$&#xA;\xi = expected~error= \textbf{E}\Big[ 1/2 (f(x) - \hat{f}(x))^2\Big].&#xA;$$"></p><p>However, since we cannot find an exact expression for <img src="intro_eq07512430879093679749.png" alt="$\xi$"> we use the instantaneous error as an estimate of <img src="intro_eq07512430879093679749.png" alt="$\xi$">, i.e.</p><p><img src="intro_eq03298570726387902902.png" alt="$$&#xA;\xi \approx \hat{\xi} = \frac{1}{2} (f(x) - \hat{f}(x))^2 = \frac{1}{2} e^2.&#xA;$$"></p><p>Our goal here is to make <img src="intro_eq01075181821788153723.png" alt="$\hat{\xi} \to 0$"> as fast as possible. To do so, we take a step <img src="intro_eq06599646232006752821.png" alt="$\Delta \textbf{w}$"> in the opposite direction of the gradent of the error surface, i.e.</p><p><img src="intro_eq02572044651999116753.png" alt="$$\Delta \textbf{w} = -\eta \nabla_\textbf{w} \hat{\xi} $$"></p><p><img src="intro_eq15013494159403640301.png" alt="$$ ~= -\eta \frac{1}{2}\nabla_\textbf{w}(f(x_k)-{\Phi}(x_k)\textbf{w})^2 $$"></p><p><img src="intro_eq08378724844506170941.png" alt="$$ ~= \eta(f(x_k)-{\Phi}(x_k)^T\textbf{w}){\Phi}(x_k) $$"></p><p><img src="intro_eq13976384917298350504.png" alt="$$ ~= \eta e {\Phi}(x_k) $$"></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Artificial Neural Networks and other Learning Systems - Lab 2
+
+%% 1. Introduction
+%
+% In this lab we use Radial Basis Functions (RBF) to approximate some simple 
+% functions of one variable. Suppose we have the function $f: R 
+% \to R$. RBF introduces a hidden layer such that $\hat{f}: 
+% R \to R^n \to R$, where $n$ is the number of 
+% neurons in the hidden layer. The trick basically consists on mapping an 
+% input $x \in R$ to a new space $R^n$ using a set of 
+% functions $\{\phi_i\}_{i=1}^n$ and then back to ${R}$. 
+% The functions used are Gaussians with different means and, possibly, also 
+% different variances
+% 
+% $$
+% \phi_i(x) = \frac{\exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}{\sum_i 
+% \exp \Big(-\frac{(x-\mu_i)^2}{2\sigma_i}\Big)}.
+% $$
+%
+% _Radial_ comes from the fact that the functions $\{\phi_i\}_{i=1}^n$ 
+% operate on distances rather than on the input points themselves. In this 
+% regard, the selection of $\{\mu_i\}_{i=1}^n$ is essential and is typically 
+% done using K-means or by simply selecting some points from the training set. 
+% Given an input $x$ the output of the network is
+%
+% $$
+% \hat{f}(x) = \sum_{i=1}^n w_i \phi_i(x).
+% $$
+%
+% Thus we can say that the units in the hidden layer work as _basis_
+% in which the function $\hat{f}$ can be expressed. 
+% The motivation behind this technique is the fact that in higher 
+% dimensional spaces, data is usually linearly separable. 
+% Suppose we have a set of patterns $\{x_1, \dots, x_N\}$ and their 
+% corresponding real function values $\{f_1, \dots, f_N\}$. While training, 
+% the neural network minimizes the error measure
+%
+% $$
+% total~error = \sum_{k=1}^N (\hat{f}_k-f_k)^2.
+% $$
+%
+% <html><h3>Computing the weight matrix</h3></html>
+%
+% The weights of the network are found by solving the following system 
+%
+% $$\phi_1(x_1)w_1 + \phi_2(x_1)w_2 + \dots + \phi_n(x_1)w_n = f_1 $$
+% 
+% $$\phi_1(x_2)w_1 + \phi_2(x_2)w_2 + \dots + \phi_n(x_2)w_n = f_2 $$
+%
+% ...
+%
+% $$\phi_1(x_k)w_1 + \phi_2(x_k)w_2 + \dots + \phi_n(x_k)w_n = f_k $$
+%
+% ...
+%
+% $$\phi_1(x_N)w_1 + \phi_2(x_N)w_2 + \dots + \phi_n(x_N)w_n = f_N$$
+%
+% _*Question*_ What is the lower bound for the number of training examples, $N$?
+% 
+% From basic linear algebra, we need at least $n$ equations in a system with $n$ variables. Otherwise, the system is underdefined. Hence, we have that $N\geq n$. If the number of samples is smaller than the number of hidden units, some units will end up doing nothing or doing the same thing as other units (i.e. will activate around the same point in the input space)
+% 
+% _*Question*_ What happens with the error if $N=n$? Why?
+% 
+% If this is the case, and the system is full-rank, we have that we can find a set of weights $\{w_i\}_{i=0}^n$ such that we perfectly reconstruct the target function, i.e. $\hat{f}_k = f_k$ for all the training samples. Thus we can decrease the error to zero.
+% From the network perspective what will happen is that every RBF unit will "specialize" in one single training point. For this reason, every time we feed an input there will be only one unit active and the others will be off, making it trivial for the following layer to classify the point. However, this is not a desirable behavior, because the network will have overfitted on the training points and will underperform on unseen data.
+% 
+% _*Question*_ Under what conditions, if any, does (\ref{eq:1}) have a solution in this case?
+% 
+% This happens if the rank per columns and the rank per rows is the same.
+% 
+% _*Question*_ During training we use an error measure defined over the training examples. Is it good to use this measure when evaluating the performance of the network? Explain!
+% Although we can make the error zero on the training set, it does not mean that the network will perform well with unseen data. On the contrary, we risk to overfit the network and reduce its generalization power.
+%
+% <html><h3>Least Squares</h3></html>
+%
+% Now our error measure becomes $total~error = ||?{\Phi}{w} - \textbf{f}||^2$, which is minimized by solving $?{\Phi}^T?{\Phi}\textbf{w} = {\Phi} \textbf{f}$, i.e.
+% 
+% $$
+% \textbf{w}_{opt} = ({\Phi}^T?{\Phi})^{-1}{\Phi}^T?\textbf{f}.
+% $$
+%
+% <html><h3>The Delta Rule</h3></html>
+%
+% Sometimes, not all the sample patterns are accessible simultaneously.  If the network operates on a continuous stream of data,  the process of computing the weights changes from the previous case. We now define our error using the expectation
+% 
+% $$
+% \xi = expected~error= \textbf{E}\Big[ 1/2 (f(x) - \hat{f}(x))^2\Big].
+% $$
+% 
+% However, since we cannot find an exact expression for $\xi$ we use the instantaneous error as an estimate of $\xi$, i.e.
+%
+% $$
+% \xi \approx \hat{\xi} = \frac{1}{2} (f(x) - \hat{f}(x))^2 = \frac{1}{2} e^2.
+% $$
+%
+% Our goal here is to make $\hat{\xi} \to 0$ as fast as possible. To do so, we take a step $\Delta \textbf{w}$ in the opposite direction of the gradent of the error surface, i.e.
+% 
+% $$\Delta \textbf{w} = -\eta \nabla_\textbf{w} \hat{\xi} $$
+%
+% $$ ~= -\eta \frac{1}{2}\nabla_\textbf{w}(f(x_k)-{\Phi}(x_k)\textbf{w})^2 $$
+%
+% $$ ~= \eta(f(x_k)-{\Phi}(x_k)^T\textbf{w}){\Phi}(x_k) $$
+%
+% $$ ~= \eta e {\Phi}(x_k) $$
+%
+##### SOURCE END #####
+--></body></html>

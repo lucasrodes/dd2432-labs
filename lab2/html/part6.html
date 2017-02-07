@@ -1,0 +1,728 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Artificial Neural Networks and other Learning Systems - Lab 2</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="part6.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Artificial Neural Networks and other Learning Systems - Lab 2</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Setup and Loading</a></li><li><a href="#4">Unsupervised Learning of the parameters of the RBF units</a></li><li><a href="#6">Supervised Learning of the second layer weights</a></li><li><a href="#15">6 Bonus - Smoothing with Gaussian kernel</a></li></ul></div><p>6 Function Approximation for Noisy Data</p><pre class="codeinput">set(0, <span class="string">'DefaultFigurePosition'</span>, get(0,<span class="string">'screensize'</span>));
+</pre><h2>Setup and Loading<a name="2"></a></h2><p>Setup</p><pre class="codeinput">clear;
+rng(3); <span class="comment">% 3 or 4 don't lead to a big dead unit</span>
+plotinit;
+</pre><p>Load data and visualize it: * x(:,1) are angles * x(:,2) are velocities * y(:,1) are distances * y(:,2) are heights</p><pre class="codeinput">[xtrain, ytrain]=readxy(<span class="string">'ballist'</span>,2,2);
+[xtest, ytest]=readxy(<span class="string">'balltest'</span>,2,2);
+
+allx = [xtrain, xtest];
+ally = [ytrain, ytest];
+figure;
+
+subplot(1,2,1);
+scatter3(allx(:,1), allx(:,2), ally(:,1),200*ones(size(allx(:,1))),<span class="string">'.r'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+
+subplot(1,2,2);
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),<span class="string">'.b'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Heights'</span>);
+</pre><img vspace="5" hspace="5" src="part6_01.png" alt=""> <h2>Unsupervised Learning of the parameters of the RBF units<a name="4"></a></h2><p>Use 20 RBF units and train their centers and spread through unsupervised learning (Expectation-Maximization with single winner)</p><pre class="codeinput">rng(4);
+data=xtrain;
+units=20;
+vqinit;
+singlewinner=1;
+
+<span class="comment">%emiterb</span>
+
+f = gcf;
+filename = <span class="string">'./html/part6_em_unsup_learning.gif'</span>;
+<span class="keyword">for</span> n = 1:5
+      emstepb;
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      <span class="keyword">if</span> n == 1;
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'Loopcount'</span>,inf);
+      <span class="keyword">else</span>
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'WriteMode'</span>,<span class="string">'append'</span>);
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(f);
+</pre><p><img vspace="5" hspace="5" src="part6_em_unsup_learning.gif" alt=""> </p><h2>Supervised Learning of the second layer weights<a name="6"></a></h2><p>The 2D input space gets mapped into a 20D space given by the 20 RBF units. From the RBF layer we want to map to the output, the output is 2D so we need 2 sets of 20 weights each. Here we will train the weight vectors to the 2 output units separately, w1 goes from the 20 RBFs to the output y1</p><p>Compute the RBF activations <img src="part6_eq06401276552089372917.png" alt="$\phi$"> for all the points in the train set.</p><pre class="codeinput">Phi=calcPhi(xtrain,m,sigma2);
+</pre><p>Extract the two desired output vectors for train and test</p><pre class="codeinput">d1=ytrain(:,1);
+d2=ytrain(:,2);
+dtest1=ytest(:,1);
+dtest2=ytest(:,2);
+</pre><p>Calculate the weight vectors by the pseudo inverse method (batch learning of the weights through min square error method)</p><pre class="codeinput">w1=Phi\d1;
+w2=Phi\d2;
+</pre><p>Now we can calculate approximations of training data</p><pre class="codeinput">y1=Phi*w1;
+y2=Phi*w2;
+</pre><p>As well as approximations of test data</p><pre class="codeinput">Phitest=calcPhi(xtest,m,sigma2);
+ytest1=Phitest*w1;
+ytest2=Phitest*w2;
+</pre><p>Finally we plot these</p><pre class="codeinput">figure;
+subplot(2,2,1); xyplot(d1,y1,<span class="string">'Angle, train set'</span>); grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,2); xyplot(d2,y2,<span class="string">'Velocity, train set'</span>);  grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,3); xyplot(dtest1,ytest1,<span class="string">'Angle, test set'</span>); grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,4); xyplot(dtest2,ytest2,<span class="string">'Velocity, test set'</span>);  grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+</pre><img vspace="5" hspace="5" src="part6_02.png" alt=""> <p>Visualize on a surface plot the 2D input vs each of the 2 outputs. On the plot are present all the datapoints from train and set.</p><pre class="codeinput">x1_full= linspace(min(allx(:,1)), max(allx(:,1)), 100);
+x2_full= linspace(min(allx(:,2)), max(allx(:,2)), 100);
+[x1_full, x2_full] = meshgrid(x1_full, x2_full);
+data = [x1_full(:), x2_full(:)];
+
+Phifull=calcPhi(data,m,sigma2);
+y1_full=Phifull*w1;
+y2_full=Phifull*w2;
+
+figure;
+ax1 = subplot(1,2,1);
+hold <span class="string">on</span>;
+surf(x1_full,x2_full,reshape(y1_full,[100,100]),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>);
+scatter3(allx(:,1), allx(:,2), ally(:,1), 200*ones(size(allx(:,1))),<span class="string">'.r'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+colormap <span class="string">jet</span>;
+alpha(.4);
+grid <span class="string">on</span>;
+
+ax2 = subplot(1,2,2);
+hold <span class="string">on</span>;
+surf(x1_full,x2_full,reshape(y2_full,[100,100]),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>);
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),<span class="string">'.b'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Height'</span>);
+colormap <span class="string">jet</span>;
+alpha(.4);
+grid <span class="string">on</span>;
+
+f = gcf;
+filename = <span class="string">'./html/part6_surf_result.gif'</span>;
+<span class="keyword">for</span> view_angle = -90:3:270
+      view(ax1, view_angle, 30);
+      view(ax2, view_angle, 30);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      <span class="keyword">if</span> view_angle == -90;
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'Loopcount'</span>,inf, <span class="string">'DelayTime'</span>,0);
+      <span class="keyword">else</span>
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'WriteMode'</span>,<span class="string">'append'</span>,<span class="string">'DelayTime'</span>,0.06);
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(f);
+</pre><p><img vspace="5" hspace="5" src="part6_surf_result.gif" alt=""> </p><h2>6 Bonus - Smoothing with Gaussian kernel<a name="15"></a></h2><p>Smoothing with a Gaussian kernel can be done like this: * for every point cast a gaussian cloack centered on the point * set that point to be the weighted average of all the points, computed using the value of the gaussian at their position</p><p><img src="part6_eq18147619514774431993.png" alt="$$\tilde{y}^{(1)}_i = \frac{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right) y^{(1)}_k}{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right)}$$"></p><p><img src="part6_eq14400296570198358428.png" alt="$$\tilde{y}^{(2)}_i = \frac{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right) y^{(2)}_k}{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right)}$$"></p><p>In matrix form, using pointwise division:</p><p><img src="part6_eq05486321224974820460.png" alt="$$ K_{i,j} = \exp\left(-\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma} \right) $$"></p><p><img src="part6_eq04139666057697336634.png" alt="$$\tilde{y} = K y / (K \cdot \mathbf{1_{col}})$$"></p><pre class="codeinput">sigma = 0.008;
+</pre><p>Sorting the points just to plot the gram matrix:</p><pre class="codeinput">figure;
+K = exp(-squareform(pdist(sort(xtrain), <span class="string">'squaredeuclidean'</span>)./sigma));
+colormap(<span class="string">'hot'</span>);
+axis(<span class="string">'image'</span>)
+imagesc(K);
+colorbar;
+</pre><img vspace="5" hspace="5" src="part6_03.png" alt=""> <p>Actual useful gram matrix</p><pre class="codeinput">K = exp(-squareform(pdist(xtrain, <span class="string">'squaredeuclidean'</span>)./sigma));
+ytrain_smooth = K*ytrain ./ [sum(K, 2), sum(K, 2)];
+</pre><p>Plotting ytrain vs ytrain smoothed</p><pre class="codeinput">figure;
+ax1 = subplot(1,2,1);
+hold <span class="string">on</span>;
+scatter3(xtrain(:,1), xtrain(:,2), ytrain(:,1), 200*ones(size(allx(:,1))),<span class="string">'.r'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+scatter3(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1), 200*ones(size(allx(:,1))),<span class="string">'.b'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Height'</span>);
+grid <span class="string">on</span>;
+title(<span class="string">'Original in red, smoothed in blue'</span>)
+
+ax2 = subplot(1,2,2);
+hold <span class="string">on</span>;
+scatter3(xtrain(:,1), xtrain(:,2), ytrain(:,1), 200*ones(size(allx(:,1))),<span class="string">'.r'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+scatter3(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1), 200*ones(size(allx(:,1))),<span class="string">'.b'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Height'</span>);
+grid <span class="string">on</span>;
+
+f = gcf;
+filename = <span class="string">'./html/part6_smooth_scatter_result.gif'</span>;
+<span class="keyword">for</span> view_angle = -90:3:270
+      view(ax1, view_angle, 10);
+      view(ax2, view_angle, 10);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      <span class="keyword">if</span> view_angle == -90;
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'Loopcount'</span>,inf, <span class="string">'DelayTime'</span>,0);
+      <span class="keyword">else</span>
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'WriteMode'</span>,<span class="string">'append'</span>,<span class="string">'DelayTime'</span>,0.06);
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(f);
+</pre><p><img vspace="5" hspace="5" src="part6_smooth_scatter_result.gif" alt=""> </p><p>Plotting surfaces from ytrain vs ytrain smoothed</p><pre class="codeinput">figure;
+
+<span class="comment">% non smoothed y1</span>
+ax1 = subplot(1,2,1);
+hold <span class="string">on</span>;
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain(:,1) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain(:,1),200*ones(size(xtrain(:,1))),<span class="string">'.r'</span>);
+surf(x1_full_mesh,x2_full_mesh,z_train, <span class="string">'EdgeColor'</span>,<span class="string">'red'</span>,<span class="string">'EdgeAlpha'</span>,0.4,<span class="string">'FaceColor'</span>,<span class="string">'red'</span>);
+alpha(0.4);
+<span class="comment">% smoothed y1</span>
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain_smooth(:,1),200*ones(size(xtrain(:,1))),<span class="string">'.b'</span>);
+surf(x1_full_mesh,x2_full_mesh,z_train, <span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>,<span class="string">'EdgeAlpha'</span>,0.4,<span class="string">'FaceColor'</span>,<span class="string">'blue'</span>);
+alpha(0.4);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+title(<span class="string">'Original in red, smoothed in blue'</span>)
+
+<span class="comment">% non smoothed y2</span>
+ax2 = subplot(1,2,2);
+hold <span class="string">on</span>;
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain(:,2) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain(:,2),200*ones(size(xtrain(:,1))),<span class="string">'.r'</span>);
+surf(x1_full_mesh,x2_full_mesh,z_train, <span class="string">'EdgeColor'</span>,<span class="string">'red'</span>,<span class="string">'EdgeAlpha'</span>,0.4,<span class="string">'FaceColor'</span>,<span class="string">'red'</span>);
+alpha(0.4);
+<span class="comment">% smoothed y2</span>
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,2) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain_smooth(:,2),200*ones(size(xtrain(:,1))),<span class="string">'.b'</span>);
+surf(x1_full_mesh,x2_full_mesh,z_train, <span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>,<span class="string">'EdgeAlpha'</span>,0.4,<span class="string">'FaceColor'</span>,<span class="string">'blue'</span>);
+alpha(0.4);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Height'</span>);
+
+f = gcf;
+filename = <span class="string">'./html/part6_smooth_surf_result.gif'</span>;
+<span class="keyword">for</span> view_angle = -90:3:270
+      view(ax1, view_angle, 10);
+      view(ax2, view_angle, 10);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      <span class="keyword">if</span> view_angle == -90;
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'Loopcount'</span>,inf, <span class="string">'DelayTime'</span>,0);
+      <span class="keyword">else</span>
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'WriteMode'</span>,<span class="string">'append'</span>,<span class="string">'DelayTime'</span>,0.06);
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(f);
+</pre><p><img vspace="5" hspace="5" src="part6_smooth_surf_result.gif" alt=""> </p><p>The unsupervised part remains the same. Just need to do supervised learning on the smoothed data.</p><p>Compute the RBF activations <img src="part6_eq06401276552089372917.png" alt="$\phi$"> for all the points in the train set.</p><pre class="codeinput">Phi=calcPhi(xtrain,m,sigma2);
+</pre><p>Extract the two desired output vectors for train and test</p><pre class="codeinput">d1=ytrain_smooth(:,1);
+d2=ytrain_smooth(:,2);
+dtest1=ytest(:,1);
+dtest2=ytest(:,2);
+</pre><p>Calculate the weight vectors by the pseudo inverse method (batch learning of the weights through min square error method)</p><pre class="codeinput">w1=Phi\d1;
+w2=Phi\d2;
+</pre><p>Now we can calculate approximations of training data</p><pre class="codeinput">y1=Phi*w1;
+y2=Phi*w2;
+</pre><p>As well as approximations of test data</p><pre class="codeinput">Phitest=calcPhi(xtest,m,sigma2);
+ytest1=Phitest*w1;
+ytest2=Phitest*w2;
+</pre><p>Finally we plot these</p><pre class="codeinput">figure;
+subplot(2,2,1); xyplot(d1,y1,<span class="string">'Angle, train set'</span>); grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,2); xyplot(d2,y2,<span class="string">'Velocity, train set'</span>);  grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,3); xyplot(dtest1,ytest1,<span class="string">'Angle, test set'</span>); grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+subplot(2,2,4); xyplot(dtest2,ytest2,<span class="string">'Velocity, test set'</span>);  grid <span class="string">on</span>; axis(<span class="string">'image'</span>);
+</pre><img vspace="5" hspace="5" src="part6_04.png" alt=""> <p>Visualize on a surface plot the 2D input vs each of the 2 outputs. On the plot are present all the datapoints from train and set.</p><pre class="codeinput">x1_full= linspace(min(allx(:,1)), max(allx(:,1)), 100);
+x2_full= linspace(min(allx(:,2)), max(allx(:,2)), 100);
+[x1_full, x2_full] = meshgrid(x1_full, x2_full);
+data = [x1_full(:), x2_full(:)];
+
+Phifull=calcPhi(data,m,sigma2);
+y1_full=Phifull*w1;
+y2_full=Phifull*w2;
+
+figure;
+ax1 = subplot(1,2,1);
+hold <span class="string">on</span>;
+surf(x1_full,x2_full,reshape(y1_full,[100,100]),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>);
+scatter3(allx(:,1), allx(:,2), ally(:,1), 200*ones(size(allx(:,1))),<span class="string">'.r'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Distance'</span>);
+colormap <span class="string">jet</span>;
+alpha(.4);
+grid <span class="string">on</span>;
+
+ax2 = subplot(1,2,2);
+hold <span class="string">on</span>;
+surf(x1_full,x2_full,reshape(y2_full,[100,100]),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>);
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),<span class="string">'.b'</span>);
+xlabel(<span class="string">'Angle'</span>); ylabel(<span class="string">'Velocity'</span>); zlabel(<span class="string">'Height'</span>);
+colormap <span class="string">jet</span>;
+alpha(.4);
+grid <span class="string">on</span>;
+
+f = gcf;
+filename = <span class="string">'./html/part6_smooth_vs_nonsmooth_surf_result.gif'</span>;
+<span class="keyword">for</span> view_angle = -90:3:270
+      view(ax1, view_angle, 30);
+      view(ax2, view_angle, 30);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      <span class="keyword">if</span> view_angle == -90;
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'Loopcount'</span>,inf, <span class="string">'DelayTime'</span>,0);
+      <span class="keyword">else</span>
+          imwrite(imind,cm,filename,<span class="string">'gif'</span>,<span class="string">'WriteMode'</span>,<span class="string">'append'</span>,<span class="string">'DelayTime'</span>,0.06);
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(f);
+</pre><p><img vspace="5" hspace="5" src="part6_smooth_vs_nonsmooth_surf_result.gif" alt=""> </p><pre class="codeinput">close <span class="string">all</span>;
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Artificial Neural Networks and other Learning Systems - Lab 2
+
+%%
+% 6 Function Approximation for Noisy Data
+set(0, 'DefaultFigurePosition', get(0,'screensize'));
+
+%% Setup and Loading
+% Setup
+clear;
+rng(3); % 3 or 4 don't lead to a big dead unit
+plotinit;
+
+%%
+% Load data and visualize it:
+% * x(:,1) are angles
+% * x(:,2) are velocities
+% * y(:,1) are distances
+% * y(:,2) are heights
+[xtrain, ytrain]=readxy('ballist',2,2);
+[xtest, ytest]=readxy('balltest',2,2);
+
+allx = [xtrain, xtest];
+ally = [ytrain, ytest];
+figure;
+
+subplot(1,2,1); 
+scatter3(allx(:,1), allx(:,2), ally(:,1),200*ones(size(allx(:,1))),'.r'); 
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+
+subplot(1,2,2); 
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),'.b'); 
+xlabel('Angle'); ylabel('Velocity'); zlabel('Heights');
+
+%% Unsupervised Learning of the parameters of the RBF units
+% Use 20 RBF units and train their centers and spread through unsupervised
+% learning (Expectation-Maximization with single winner)
+rng(4);
+data=xtrain;
+units=20;
+vqinit;
+singlewinner=1;
+
+%emiterb
+
+f = gcf;
+filename = './html/part6_em_unsup_learning.gif';
+for n = 1:5
+      emstepb;
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if n == 1;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append');
+      end
+end
+close(f);
+%%
+% 
+% <<part6_em_unsup_learning.gif>>
+% 
+
+%% Supervised Learning of the second layer weights
+% The 2D input space gets mapped into a 20D space given by the 20 RBF
+% units.
+% From the RBF layer we want to map to the output, the output is 2D so we
+% need 2 sets of 20 weights each. Here we will train the weight vectors to 
+% the 2 output units separately, w1 goes from the 20 RBFs to the output y1
+
+%%
+% Compute the RBF activations $\phi$ for all the points in the train set.
+Phi=calcPhi(xtrain,m,sigma2);
+
+%%
+% Extract the two desired output vectors for train and test
+d1=ytrain(:,1);
+d2=ytrain(:,2);
+dtest1=ytest(:,1);
+dtest2=ytest(:,2);
+
+%%
+% Calculate the weight vectors by the pseudo inverse method 
+% (batch learning of the weights through min square error method)
+w1=Phi\d1;
+w2=Phi\d2;
+
+%%
+% Now we can calculate approximations of training data
+y1=Phi*w1;
+y2=Phi*w2;
+
+%%
+% As well as approximations of test data
+Phitest=calcPhi(xtest,m,sigma2);
+ytest1=Phitest*w1;
+ytest2=Phitest*w2;
+
+%%
+% Finally we plot these
+figure;
+subplot(2,2,1); xyplot(d1,y1,'Angle, train set'); grid on; axis('image');
+subplot(2,2,2); xyplot(d2,y2,'Velocity, train set');  grid on; axis('image');
+subplot(2,2,3); xyplot(dtest1,ytest1,'Angle, test set'); grid on; axis('image');
+subplot(2,2,4); xyplot(dtest2,ytest2,'Velocity, test set');  grid on; axis('image');
+
+%% 
+% Visualize on a surface plot the 2D input vs each of the 2 outputs.
+% On the plot are present all the datapoints from train and set.
+x1_full= linspace(min(allx(:,1)), max(allx(:,1)), 100);
+x2_full= linspace(min(allx(:,2)), max(allx(:,2)), 100);
+[x1_full, x2_full] = meshgrid(x1_full, x2_full);
+data = [x1_full(:), x2_full(:)];
+
+Phifull=calcPhi(data,m,sigma2);
+y1_full=Phifull*w1;
+y2_full=Phifull*w2;
+
+figure;
+ax1 = subplot(1,2,1);
+hold on;
+surf(x1_full,x2_full,reshape(y1_full,[100,100]),'LineStyle','none');
+scatter3(allx(:,1), allx(:,2), ally(:,1), 200*ones(size(allx(:,1))),'.r');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+colormap jet;
+alpha(.4);
+grid on;
+
+ax2 = subplot(1,2,2);
+hold on;
+surf(x1_full,x2_full,reshape(y2_full,[100,100]),'LineStyle','none');
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),'.b'); 
+xlabel('Angle'); ylabel('Velocity'); zlabel('Height');
+colormap jet;
+alpha(.4);
+grid on;
+
+f = gcf;
+filename = './html/part6_surf_result.gif';
+for view_angle = -90:3:270
+      view(ax1, view_angle, 30);
+      view(ax2, view_angle, 30);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if view_angle == -90;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf, 'DelayTime',0);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',0.06);
+      end
+end
+close(f);
+
+%%
+% 
+% <<part6_surf_result.gif>>
+% 
+
+%% 6 Bonus - Smoothing with Gaussian kernel
+% Smoothing with a Gaussian kernel can be done like this:
+% * for every point cast a gaussian cloack centered on the point
+% * set that point to be the weighted average of all the points, computed
+% using the value of the gaussian at their position
+%
+% $$\tilde{y}^{(1)}_i = \frac{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right) y^{(1)}_k}{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right)}$$
+%
+% $$\tilde{y}^{(2)}_i = \frac{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right) y^{(2)}_k}{\sum_k \exp\left( -\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma}\right)}$$
+%
+% In matrix form, using pointwise division:
+%
+% $$ K_{i,j} = \exp\left(-\frac{||\mathbf{x}_i-\mathbf{x}_k||^2}{\sigma} \right) $$
+%
+% $$\tilde{y} = K y / (K \cdot \mathbf{1_{col}})$$
+%
+
+sigma = 0.008;
+
+%%
+% Sorting the points just to plot the gram matrix:
+figure;
+K = exp(-squareform(pdist(sort(xtrain), 'squaredeuclidean')./sigma)); 
+colormap('hot');
+axis('image')
+imagesc(K);
+colorbar;
+
+%%
+% Actual useful gram matrix
+K = exp(-squareform(pdist(xtrain, 'squaredeuclidean')./sigma));
+ytrain_smooth = K*ytrain ./ [sum(K, 2), sum(K, 2)];
+
+%%
+% Plotting ytrain vs ytrain smoothed
+figure;
+ax1 = subplot(1,2,1);
+hold on;
+scatter3(xtrain(:,1), xtrain(:,2), ytrain(:,1), 200*ones(size(allx(:,1))),'.r');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+scatter3(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1), 200*ones(size(allx(:,1))),'.b');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Height');
+grid on;
+title('Original in red, smoothed in blue')
+
+ax2 = subplot(1,2,2);
+hold on;
+scatter3(xtrain(:,1), xtrain(:,2), ytrain(:,1), 200*ones(size(allx(:,1))),'.r');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+scatter3(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1), 200*ones(size(allx(:,1))),'.b');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Height');
+grid on;
+
+f = gcf;
+filename = './html/part6_smooth_scatter_result.gif';
+for view_angle = -90:3:270
+      view(ax1, view_angle, 10);
+      view(ax2, view_angle, 10);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if view_angle == -90;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf, 'DelayTime',0);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',0.06);
+      end
+end
+close(f);
+
+%%
+% 
+% <<part6_smooth_scatter_result.gif>>
+% 
+
+
+%%
+% Plotting surfaces from ytrain vs ytrain smoothed
+figure;
+
+% non smoothed y1
+ax1 = subplot(1,2,1);
+hold on;
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain(:,1) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain(:,1),200*ones(size(xtrain(:,1))),'.r');
+surf(x1_full_mesh,x2_full_mesh,z_train, 'EdgeColor','red','EdgeAlpha',0.4,'FaceColor','red');
+alpha(0.4);
+% smoothed y1
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,1) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain_smooth(:,1),200*ones(size(xtrain(:,1))),'.b');
+surf(x1_full_mesh,x2_full_mesh,z_train, 'EdgeColor','blue','EdgeAlpha',0.4,'FaceColor','blue');
+alpha(0.4);
+grid on;
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+title('Original in red, smoothed in blue')
+
+% non smoothed y2
+ax2 = subplot(1,2,2);
+hold on;
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain(:,2) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain(:,2),200*ones(size(xtrain(:,1))),'.r');
+surf(x1_full_mesh,x2_full_mesh,z_train, 'EdgeColor','red','EdgeAlpha',0.4,'FaceColor','red');
+alpha(0.4);
+% smoothed y2
+x1_full= linspace(min(xtrain(:,1)), max(xtrain(:,1)), 100);
+x2_full= linspace(min(xtrain(:,2)), max(xtrain(:,2)), 100);
+[x1_full_mesh, x2_full_mesh] = meshgrid(x1_full, x2_full);
+z_train = griddata(xtrain(:,1), xtrain(:,2), ytrain_smooth(:,2) ,x1_full_mesh, x2_full_mesh);
+scatter3(xtrain(:,1),xtrain(:,2),ytrain_smooth(:,2),200*ones(size(xtrain(:,1))),'.b');
+surf(x1_full_mesh,x2_full_mesh,z_train, 'EdgeColor','blue','EdgeAlpha',0.4,'FaceColor','blue');
+alpha(0.4);
+grid on;
+xlabel('Angle'); ylabel('Velocity'); zlabel('Height');
+
+f = gcf;
+filename = './html/part6_smooth_surf_result.gif';
+for view_angle = -90:3:270
+      view(ax1, view_angle, 10);
+      view(ax2, view_angle, 10);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if view_angle == -90;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf, 'DelayTime',0);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',0.06);
+      end
+end
+close(f);
+
+%%
+% 
+% <<part6_smooth_surf_result.gif>>
+% 
+
+%%
+% The unsupervised part remains the same. Just need to do supervised
+% learning on the smoothed data.
+%
+% Compute the RBF activations $\phi$ for all the points in the train set.
+Phi=calcPhi(xtrain,m,sigma2);
+
+%%
+% Extract the two desired output vectors for train and test
+d1=ytrain_smooth(:,1);
+d2=ytrain_smooth(:,2);
+dtest1=ytest(:,1);
+dtest2=ytest(:,2);
+
+%%
+% Calculate the weight vectors by the pseudo inverse method 
+% (batch learning of the weights through min square error method)
+w1=Phi\d1;
+w2=Phi\d2;
+
+%%
+% Now we can calculate approximations of training data
+y1=Phi*w1;
+y2=Phi*w2;
+
+%%
+% As well as approximations of test data
+Phitest=calcPhi(xtest,m,sigma2);
+ytest1=Phitest*w1;
+ytest2=Phitest*w2;
+
+%%
+% Finally we plot these
+figure;
+subplot(2,2,1); xyplot(d1,y1,'Angle, train set'); grid on; axis('image');
+subplot(2,2,2); xyplot(d2,y2,'Velocity, train set');  grid on; axis('image');
+subplot(2,2,3); xyplot(dtest1,ytest1,'Angle, test set'); grid on; axis('image');
+subplot(2,2,4); xyplot(dtest2,ytest2,'Velocity, test set');  grid on; axis('image');
+
+%% 
+% Visualize on a surface plot the 2D input vs each of the 2 outputs.
+% On the plot are present all the datapoints from train and set.
+x1_full= linspace(min(allx(:,1)), max(allx(:,1)), 100);
+x2_full= linspace(min(allx(:,2)), max(allx(:,2)), 100);
+[x1_full, x2_full] = meshgrid(x1_full, x2_full);
+data = [x1_full(:), x2_full(:)];
+
+Phifull=calcPhi(data,m,sigma2);
+y1_full=Phifull*w1;
+y2_full=Phifull*w2;
+
+figure;
+ax1 = subplot(1,2,1);
+hold on;
+surf(x1_full,x2_full,reshape(y1_full,[100,100]),'LineStyle','none');
+scatter3(allx(:,1), allx(:,2), ally(:,1), 200*ones(size(allx(:,1))),'.r');
+xlabel('Angle'); ylabel('Velocity'); zlabel('Distance');
+colormap jet;
+alpha(.4);
+grid on;
+
+ax2 = subplot(1,2,2);
+hold on;
+surf(x1_full,x2_full,reshape(y2_full,[100,100]),'LineStyle','none');
+scatter3(allx(:,1), allx(:,2), ally(:,2),200*ones(size(allx(:,1))),'.b'); 
+xlabel('Angle'); ylabel('Velocity'); zlabel('Height');
+colormap jet;
+alpha(.4);
+grid on;
+
+f = gcf;
+filename = './html/part6_smooth_vs_nonsmooth_surf_result.gif';
+for view_angle = -90:3:270
+      view(ax1, view_angle, 30);
+      view(ax2, view_angle, 30);
+      frame = getframe(f);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if view_angle == -90;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf, 'DelayTime',0);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',0.06);
+      end
+end
+close(f);
+
+%%
+% 
+% <<part6_smooth_vs_nonsmooth_surf_result.gif>>
+% 
+%% 
+close all;
+##### SOURCE END #####
+--></body></html>
