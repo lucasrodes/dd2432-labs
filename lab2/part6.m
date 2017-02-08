@@ -385,7 +385,7 @@ for view_angle = -90:3:270
 end
 close(f);
 
-%%
+clos%%
 % 
 % <<part6_smooth_vs_nonsmooth_surf_result.gif>>
 % 
