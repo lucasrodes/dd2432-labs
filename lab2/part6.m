@@ -179,9 +179,9 @@ sigma = 0.008;
 % Sorting the points just to plot the gram matrix:
 figure;
 K = exp(-squareform(pdist(sort(xtrain), 'squaredeuclidean')./sigma)); 
+imagesc(K);
 colormap('hot');
 axis('image')
-imagesc(K);
 colorbar;
 
 %%
