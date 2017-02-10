@@ -703,7 +703,7 @@ sex = [0
 
 % Coding: 0=no party, 1='m', 2='fp', 3='s', 4='v', 5='mp', 6='kd', 7='c'
 party_labels = {'no party'; 'm'; 'fp'; 's'; 'v'; 'mp'; 'kd'; 'c'};
-party_colormap = [0 0 0; 0 0 1; 0 1 1; 1 0 1; 1 0 0; 0 1 0; 1 1 1; 1 1 0];
+party_colormap = [0 0 0; 0 0 1; 0 1 1; 1 0 1; 1 0 0; 0 1 0; .5137 .4627 .6118; 1 1 0];
 parties = [1
     2
     1
@@ -1054,6 +1054,7 @@ parties = [1
     1
     2];
 
+districts_colormap = distinguishable_colors(29);
 districts = [1
     1
     1
