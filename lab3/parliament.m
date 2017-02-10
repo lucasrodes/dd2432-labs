@@ -65,10 +65,11 @@ weights = rand(num_of_units, num_of_votes);
 %
 
 %%
-% *Example*
 figure;
 
-% Example 1
+% *Example 1*
+% Let us consider a first example with the grid $side \times side$, where 
+% the winner is, say, the $27:th$ unit and the neighbourhood is of 2.
 k_winner = 27;
 radius = 2;
 k_neighbors = neighborhood2(k_winner, radius, side_of_topologic_grid);
@@ -85,7 +86,9 @@ axis image;
 xlim([0, side_of_topologic_grid+1]);
 ylim([0, side_of_topologic_grid+1]);
 
-% Example 2
+% *Example 2*
+% In this example the winning unit is 67 and we consider a larger
+% neighbourhood, namely of 4.
 k_winner = 67;
 radius = 4;
 k_neighbors = neighborhood2(k_winner, radius, side_of_topologic_grid);
@@ -102,6 +105,43 @@ axis image;
 xlim([0, side_of_topologic_grid+1]);
 ylim([0, side_of_topologic_grid+1]);
 
+%%
+%
+% <include>neighborhood2_gauss.m</include>
+%
+
+figure;
+
+% In the following, we propose to introduce a slight modification on the 
+% neighbourhood obtention. So far we have assigned the same update effect
+% (unitary) to all updated units, both the winner and its neighbours. We 
+% now consider the usage of a gaussian distribution centered at the winner 
+% unit, which tells which units are more affected by the seen point. In
+% particular, the update equation is now given by 
+% $ w^{new} \gets w^{old} -\eta h (x-w)$, where $h$ denotes the 
+% _neighborhood_ level and decreases  with  distance  from  the winning
+% unit.
+
+% *Example 1*
+k_winner = 27;
+sigma = 1;
+k_neighbors = neighborhood2_gauss(k_winner, sigma, side_of_topologic_grid);
+
+subplot(1,2,1);
+bar3(reshape(k_neighbors,side_of_topologic_grid,side_of_topologic_grid));
+title(sprintf('Winner: (%d,%d)    Sigma: %d', ...
+    is(k_winner), js(k_winner), sigma));
+
+% *Example 2*
+k_winner = 27;
+sigma = 0.5;
+k_neighbors = neighborhood2_gauss(k_winner, sigma, side_of_topologic_grid);
+
+subplot(1,2,2);
+bar3(reshape(k_neighbors, side_of_topologic_grid, side_of_topologic_grid));
+title(sprintf('Winner: (%d,%d)    Sigma: %d', ...
+    is(k_winner), js(k_winner), sigma));
+
 %% Training
 % As usual, we diminish the size of the neighborhood as we go through the
 % training epochs. Also we shuffle the MPs at every epoch before presenting
@@ -110,14 +150,19 @@ ylim([0, side_of_topologic_grid+1]);
 for epoch = 1:num_of_epochs
     if epoch < .1 * num_of_epochs
         radius = 4;
+        sigma = 2;
     elseif epoch < .2 * num_of_epochs
         radius = 3;
+        sigma = 1.6;
     elseif epoch < .5 * num_of_epochs
         radius = 2;
+        sigma = 1.2;
     elseif epoch < .8 * num_of_epochs
         radius = 1;
+        sigma = 0.8;
     else
         radius = 0;
+        sigma = 0.00001;
     end
     for mp_idx = randperm(num_of_MP)
         % Find winning unit
@@ -131,6 +176,9 @@ for epoch = 1:num_of_epochs
         update_function = repmat( ...
             neighborhood2(k_winner, radius, side_of_topologic_grid), ...
             1, num_of_votes);
+        %update_function = repmat( ...
+        %    neighborhood2_gauss(k_winner, sigma, side_of_topologic_grid), ...
+        %    1, num_of_votes);
         
         % Update weights
         weights = weights + update_function .* (eta * diff);
@@ -194,6 +242,7 @@ axis ij;
 axis image;
 xlim([0, side_of_topologic_grid+1]);
 ylim([0, side_of_topologic_grid+1]);
+%legend(party_names);
 
 subplot(1,3,3); hold on;
 for d = unique(districts)'
