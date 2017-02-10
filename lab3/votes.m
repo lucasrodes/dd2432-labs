@@ -4,9 +4,14 @@
 set(0, 'DefaultFigurePosition', get(0,'screensize'));
 clc; clear; close all;
 
-%%
+%% Introduction
 %
-% This is the meaning of each variable loaded from |politics|:
+% In this exercise we will try to get some insights of the swedish parlia-
+% ment ''political distribution'' by exploring data corresponding to the
+% different MPs (such as their votes, their origins etc.). 
+%
+% In this regard, we will work with a variable loaded from |politics| that 
+% contains several indicators, namely:
 %
 % * |parties| = party membership of each MP
 % * |sex| = sex of each MP
@@ -20,12 +25,13 @@ clc; clear; close all;
 % * |sex_labels| = labels for sex
 % * |party_colormap| = colormap for party
 % * |party_labels| = labels for party
-
+%
+% For instance, let us display some of these labels  for the 10 first MPs.
 politics;
 table(names(1:10), sex_labels(((sex(1:10) + 1)')), ...
     party_labels(((parties(1:10) + 1)')), districts(1:10), ...
     'VariableNames', {'Name', 'Sex', 'Party', 'District'})
-%% Introduction
+%% Preparing the data
 % *Setup*
 eta = 0.2;
 num_of_epochs = 50;
@@ -33,12 +39,13 @@ num_of_epochs = 50;
 
 %%
 % We will work with a 2D topology in which the units are connected in a
-% grid-like fashion. The neighborhood of a unit is defined by thresholding the
-% manhattan distance between the unit and the others.
+% grid-like fashion. The neighborhood of a unit is defined by thresholding 
+% the manhattan distance between the unit and the others.
 %
-% From an abstract point of view the units are organized in a 2D grid, and
-% their coordinates are given by a $(i, j)$ pair. Practically we will assign
-% an index $k$ to every unit so that $k = side \cdot i + j$.
+% From an abstract point of view the units are organized in a 2D square 
+% grid, and their coordinates are given by a $(i, j)$ pair. In practice, we
+% will assign an index $k$ to every unit so that $k = side \cdot i + j$, 
+% where $side = 10$ in this example.
 
 side_of_topologic_grid = 10;
 num_of_units = side_of_topologic_grid^2;
