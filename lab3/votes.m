@@ -25,18 +25,67 @@ politics;
 table(names(1:10), sex_labels(((sex(1:10) + 1)')), ...
     party_labels(((parties(1:10) + 1)')), districts(1:10), ...
     'VariableNames', {'Name', 'Sex', 'Party', 'District'})
-%%
+%% Introduction
 % *Setup*
-% We will work with a 2D topology in which the units are connected in a
-% grid-like fashion.
-
-% System parameters
 eta = 0.2;
 num_of_epochs = 50;
+[num_of_MP, num_of_votes] = size(votes);
+
+%%
+% We will work with a 2D topology in which the units are connected in a
+% grid-like fashion. The neighborhood of a unit is defined by thresholding the
+% manhattan distance between the unit and the others.
+%
+% From an abstract point of view the units are organized in a 2D grid, and
+% their coordinates are given by a $(i, j)$ pair. Practically we will assign
+% an index $k$ to every unit so that $k = side \cdot i + j$.
+
 side_of_topologic_grid = 10;
 num_of_units = side_of_topologic_grid^2;
-[num_of_MP, num_of_votes] = size(votes);
+[x, y] = meshgrid(1:side_of_topologic_grid, 1:side_of_topologic_grid);
+is = reshape(x, 1, num_of_units);
+js = reshape(y, 1, num_of_units);
 weights = rand(num_of_units, num_of_votes);
+
+%%
+% *Example*
+figure;
+
+% Example 1
+k_winning_unit = 27;
+neighborhood_radius = 2;
+k_neighbors = neighborhood2(k_winning_unit, neighborhood_radius, side_of_topologic_grid);
+
+subplot(1,2,1);
+hold on;
+plot(js, is, '.b', 'MarkerSize', 15);
+plot(js(k_neighbors), is(k_neighbors), '.m', 'MarkerSize', 30);
+plot(js(k_winning_unit), is(k_winning_unit), '.r', 'MarkerSize', 40);
+title(sprintf('Winner: (%d,%d)    Radius: %d', ...
+    is(k_winning_unit), js(k_winning_unit), neighborhood_radius));
+axis ij;
+axis image;
+xlim([0, side_of_topologic_grid+1]);
+ylim([0, side_of_topologic_grid+1]);
+
+% Example 2
+k_winning_unit = 67;
+neighborhood_radius = 4;
+k_neighbors = neighborhood2(k_winning_unit, neighborhood_radius, side_of_topologic_grid);
+
+subplot(1,2,2);
+hold on;
+plot(js, is, '.b', 'MarkerSize', 15);
+plot(js(k_neighbors), is(k_neighbors), '.m', 'MarkerSize', 30);
+plot(js(k_winning_unit), is(k_winning_unit), '.r', 'MarkerSize', 40);
+title(sprintf('Winner: (%d,%d)    Radius: %d', ...
+    is(k_winning_unit), js(k_winning_unit), neighborhood_radius));
+axis ij;
+axis image;
+xlim([0, side_of_topologic_grid+1]);
+ylim([0, side_of_topologic_grid+1]);
+
+%% Training
 
 for epoch = 1:num_of_epochs
 
@@ -44,16 +93,16 @@ for epoch = 1:num_of_epochs
         mp = votes_(mp_idx, :);
         diff = repmat(mp, num_of_units, 1) - weights;
         dist = sum(diff.^2, 2);
-        [~, winning_unit] = min(dist);
+        [~, k_winning_unit] = min(dist);
         
         % Initialize update function with zeros
         update_function = zeros(num_of_units, num_of_votes);
         % row axis
-        neighboor_row_min = max(1, winning_unit - 1);
-        neighboor_row_max = min(side_of_topologic_grid, winning_unit + 1);
+        neighboor_row_min = max(1, k_winning_unit - 1);
+        neighboor_row_max = min(side_of_topologic_grid, k_winning_unit + 1);
         % col axis
-        neighboor_col_min = max(1, winning_unit - 1);
-        neighboor_col_max = min(side_of_topologic_grid, winning_unit + 1);
+        neighboor_col_min = max(1, k_winning_unit - 1);
+        neighboor_col_max = min(side_of_topologic_grid, k_winning_unit + 1);
         % Update update function (1s corresponding to active units)
         update_function(neighboor_row_min : neighboor_row_max, ...
             neighboor_col_min:neighboor_col_max) = 1;
@@ -63,9 +112,4 @@ for epoch = 1:num_of_epochs
     end
 end
 
-
-% Define meshgrid for the output grid
-[x, y] = meshgrid([1:10], [1:10]);
-xpos = reshape(x, 1, 100);
-ypos = reshape(y, 1, 100);
 
