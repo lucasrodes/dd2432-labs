@@ -69,9 +69,8 @@ padded = [num_of_units - max_neighborhood_size : num_of_units, ...
             1 : num_of_units, ...
             1 : num_of_units + max_neighborhood_size];
         
-figure;
+figure(1);
 filename = './html/cycle_10units.gif';
-f = gcf;
 
 for epoch = 1:num_of_epochs
     if epoch < .2 * num_of_epochs
@@ -131,7 +130,6 @@ for epoch = 1:num_of_epochs
         %pause(0.0001);
     end
 end
-close(f);
 
 %%
 %
@@ -157,7 +155,7 @@ padded = [num_of_units - max_neighborhood_size : num_of_units, ...
             1 : num_of_units, ...
             1 : num_of_units + max_neighborhood_size];
         
-figure;
+figure(2);
 filename = './html/cycle_20units.gif';
 f = gcf;
 
