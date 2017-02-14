@@ -1,0 +1,498 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Cyclic Tour</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-14"><meta name="DC.source" content="cyclic.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Cyclic Tour</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Introduction</a></li><li><a href="#6">Experiment</a></li><li><a href="#12">Conclusions</a></li></ul></div><pre class="codeinput">set(0, <span class="string">'DefaultFigurePosition'</span>, get(0,<span class="string">'screensize'</span>));
+clc; clear; close <span class="string">all</span>;
+addpath(<span class="string">'provided_code'</span>);
+</pre><h2>Introduction<a name="2"></a></h2><p>For a circular structure we to define a different neighborhood function. We can just pad the array of the units with additional units on the sides:</p><p><img src="cyclic_eq12747619526460191014.png" alt="$$[9,10|1,2,3,4,5,6,\underbrace{7,8,\mathbf{9},10|1}_{neighborhood},2]$$"></p><p>In this experiment we are supposed to use SOM to find an approximation to the TSP problem. In this regard, given a set of <img src="cyclic_eq03672095713503266041.png" alt="$N$"> points (cities) and an array of topologycally-arranged units (circular-fashion) we use SOM in order to find a cycle that goes through each city. Ideally, we want to use <img src="cyclic_eq03672095713503266041.png" alt="$N$"> units such that each of them clusters a specific city and hence a closed cycle is formed.</p><p>However this is not typically the case and some units might end up not clustering any of the given points.</p><p>For this experiment we need to set different parameters, which as proposed in the lab tutorial are set using <i>trial and error</i> methodology. These parameters are:</p><div><ul><li><b>Number of units</b> (we are told to use 10 units, however we explored other configurations with more than 10 units which actually lead to "better" results.</li></ul></div><div><ul><li><b>Number of epochs</b>. We need enough iterations such that we can obtain a reasonable result. However, at a certain point the result remain unvariant. In particular, we note that most of the time the cycle oscillates periodically between two configurations, so it's better to switch to a different neighborhood size faster).</li></ul></div><pre class="codeinput">num_of_epochs = 150;
+epochs = 1:num_of_epochs;
+</pre><div><ul><li><b>Learning rate <img src="cyclic_eq17615028512695387165.png" alt="$\eta$"></b>. As the number of epochs increases, we decrease the learning parameter. In particular we decided to use an exponential decay given by</li></ul></div><p><img src="cyclic_eq07336559943127436863.png" alt="$$\eta = \eta_0 \exp(-t/\lambda_\eta)$$"></p><p>where <img src="cyclic_eq15932494944573874204.png" alt="$\eta_0$"> is the initial learning rate, <img src="cyclic_eq12656067504604335951.png" alt="$t$"> denotes the epoch number and <img src="cyclic_eq00653904459601435849.png" alt="$\lambda_\eta$"> stands for the decay constant of the learning rate.</p><pre class="codeinput">eta_0 = .8;
+lambda_eta = 6*num_of_epochs/8;
+eta = eta_0 * exp(-(epochs-1)/lambda_eta);
+fprintf(<span class="string">'eta_0 = %.2f, lambda_eta = %.2f'</span>, eta_0, lambda_eta);
+</pre><pre class="codeoutput">eta_0 = 0.80, lambda_eta = 112.50</pre><div><ul><li><b>Neighbourhood size (NS)</b>. We use the proposed definition of Neighbourhood. In particular, we define a maximum distance, say <img src="cyclic_eq17615571056258974497.png" alt="$d$">, such that only units with indices <img src="cyclic_eq00110555795559956677.png" alt="$k \leq |k_w -d|$"> are considered within the neighbourhood of the winning unit <img src="cyclic_eq12305523212332109591.png" alt="$k_w$">. In  this approach, the winning unit and the neighbouring units are updated equally, using <img src="cyclic_eq12255038452901045304.png" alt="$w_k^{new} \gets w_k^{old} -\eta (x-w_k)$"> , where <img src="cyclic_eq12428413953531653171.png" alt="$x$"> is a city's coordinates activating the wining unit and <img src="cyclic_eq15636846968047188835.png" alt="$k$"> is the winning unit's and its neighbours unit's indices. Similarly to the learning rate, we decrease the size of the neighbourhood as the number of iterations increases. We also use an exponential decay given by</li></ul></div><p><img src="cyclic_eq01542160258402832216.png" alt="$$NS = round(NS_0 \exp(-t/\lambda_{NS}))$$"></p><p>, where <img src="cyclic_eq17939071853117206593.png" alt="$NS_0$"> is the initial neighbour size, <img src="cyclic_eq12656067504604335951.png" alt="$t$"> denotes the epoch number and <img src="cyclic_eq02858163664356535236.png" alt="$\lambda_{NS}$"> stands for the decay constant of the neighbour size.</p><pre class="codeinput">neighborhood_size_0 = 4;
+lambda_ns = num_of_epochs/4;
+neighborhood_size = round(neighborhood_size_0 * exp(-(epochs-1)/lambda_ns));
+fprintf(<span class="string">'neighborhood_size_0 = %d, lambda_ns = %.2f'</span>, <span class="keyword">...</span>
+    neighborhood_size_0, lambda_ns);
+
+figure(1);
+subplot(1,2,1); plot(eta); grid <span class="string">on</span>;
+title(<span class="string">'Learning Rate vs Epoch'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'fontsize'</span>,16);
+xlabel(<span class="string">'Number of Epoch'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'fontsize'</span>,14);
+ylabel(<span class="string">'$\eta$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'fontsize'</span>,14);
+
+subplot(1,2,2); stairs(neighborhood_size, <span class="string">'r'</span>); grid <span class="string">on</span>;
+title(<span class="string">'Neighbourhood size vs Epoch'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>,<span class="string">'fontsize'</span>,16);
+xlabel(<span class="string">'Number of Epoch'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'fontsize'</span>,14);
+ylabel(<span class="string">'$NS$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'fontsize'</span>,14);
+</pre><pre class="codeoutput">neighborhood_size_0 = 4, lambda_ns = 37.50</pre><img vspace="5" hspace="5" src="cyclic_01.png" alt=""> <p>Besides this, we have to pay attention to the following consideration:</p><div><ul><li>Randomization of the order in which the cities are considered at every epoch (avoid possible correlations).</li></ul></div><h2>Experiment<a name="6"></a></h2><p><b>A) Setup</b></p><pre class="codeinput">cities;
+[num_of_cities, num_of_features] = size(city);
+</pre><p><b>B1)Training with 10 units</b></p><p>Let us first consider the case where we use the same number of units as the number of cities.</p><pre class="codeinput">num_of_units = 10;
+weights = rand(num_of_units, num_of_features);
+padded = [num_of_units - (neighborhood_size_0-1:-1:0), (1 : <span class="keyword">...</span>
+    num_of_units), (1:neighborhood_size_0)];
+</pre><p>Prepare plot and generation of video and start the iterative algorithm</p><pre class="codeinput">figure(2);
+dim = [0.02 0.68 0.3 0.3];
+annotation(<span class="string">'textbox'</span>,dim,<span class="string">'String'</span>,[<span class="string">'$\eta_0 =$ '</span>  num2str(eta_0) char(10)<span class="keyword">...</span>
+    <span class="string">'$\lambda_\eta = $ '</span> num2str(lambda_eta)],<span class="keyword">...</span>
+    <span class="string">'FitBoxToText'</span>,<span class="string">'on'</span>, <span class="string">'fontsize'</span>,16, <span class="string">'interpreter'</span>, <span class="string">'latex'</span>);
+vidObj = VideoWriter(<span class="string">'10U.avi'</span>);
+vidObj.FrameRate = 60;
+open(vidObj);
+set(gca,<span class="string">'nextplot'</span>,<span class="string">'replacechildren'</span>);
+
+<span class="keyword">for</span> epoch = epochs
+    eta = eta_0 * exp(-(epoch-1)/lambda_eta);
+    neighborhood_size = round(neighborhood_size_0 * exp(-(epoch-1)/<span class="keyword">...</span>
+        lambda_ns));
+
+    <span class="keyword">for</span> city_idx = randperm(num_of_cities)
+        <span class="comment">% Find winner unit</span>
+        city_coor = city(city_idx,:);
+        diff = repmat(city_coor, num_of_units, 1) - weights;
+        [~, winning_unit] = min(sum(diff.^2, 2));
+
+        <span class="comment">% Neighbors</span>
+        neighbors_idx = padded(winning_unit+neighborhood_size_0<span class="keyword">...</span>
+            -neighborhood_size:winning_unit+neighborhood_size_0<span class="keyword">...</span>
+            +neighborhood_size);
+
+        <span class="comment">% Update mask</span>
+        update_function = zeros(num_of_units, num_of_features);
+        update_function(neighbors_idx, :) = 1;
+
+        <span class="comment">% Update weights</span>
+        weights_old = weights;
+        weights = weights_old + update_function .* (eta * diff);
+
+        <span class="comment">% Plotting</span>
+        tour = [weights; weights(1,:)];
+        plot(tour(:,1),tour(:,2),<span class="string">'c-o'</span>, <span class="string">'LineWidth'</span>,1); hold <span class="string">on</span>;
+        plot(weights(winning_unit,1),weights(winning_unit,2),<span class="string">'.b'</span>,<span class="keyword">...</span>
+            <span class="string">'MarkerSize'</span>, 35);
+        plot(weights(neighbors_idx,1),weights(neighbors_idx,2),<span class="string">'.g-'</span>,<span class="keyword">...</span>
+            <span class="string">'MarkerSize'</span>, 20, <span class="string">'LineWidth'</span>,2);
+        plot(city(:,1),city(:,2),<span class="string">'.m'</span>,<span class="string">'MarkerSize'</span>, 15);
+        plot(city(city_idx,1),city(city_idx,2),<span class="string">'.r'</span>,<span class="string">'MarkerSize'</span>, 35);
+        title(sprintf(<span class="keyword">...</span>
+            <span class="string">'Number of units: %4d, Epoch: %4d, Neighborhood size: %2d, learning rate = %.2f'</span>, <span class="keyword">...</span>
+            num_of_units, epoch, neighborhood_size, eta), <span class="string">'Interpreter'</span>, <span class="keyword">...</span>
+            <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 16);
+        xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 13);
+        ylabel(<span class="string">'$y$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 13);
+        hold <span class="string">off</span>;
+        pause(0.000001);
+        frame_index = num_of_cities*(epoch-1)+city_idx;
+        currFrame = getframe(gcf);
+        writeVideo(vidObj,currFrame);
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> isequal(weights_old, weights)
+        fprintf(<span class="string">'Convergence at epoch %3d'</span>, epoch);
+        <span class="keyword">break</span>;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(vidObj);
+</pre><img vspace="5" hspace="5" src="cyclic_02.png" alt=""> <p><b>B2) Training with 20 units</b></p><p>The results obtained with 10 units are close to the optimal solution, however, sometimes some of the units do not cluster any point leaving the cycle incomplete (we do not visit some cities). In this regard, we now increase the number of units, such that we can ensure that <i>all</i> cities are visited. Once finished, we can obtain the order of visited cities by only looking at the units that cluster a given point.</p><pre class="codeinput">num_of_units = 20;
+weights = rand(num_of_units, num_of_features);
+padded = [num_of_units - (neighborhood_size_0-1:-1:0), (1 : <span class="keyword">...</span>
+    num_of_units), (1:neighborhood_size_0)];
+</pre><p>Prepare plot and generation of video and start the iterative algorithm</p><pre class="codeinput">figure(3);
+annotation(<span class="string">'textbox'</span>,dim,<span class="string">'String'</span>,[<span class="string">'$\eta_0 =$ '</span>  num2str(eta_0) char(10)<span class="keyword">...</span>
+    <span class="string">'$\lambda_\eta = $ '</span> num2str(lambda_eta)],<span class="keyword">...</span>
+    <span class="string">'FitBoxToText'</span>,<span class="string">'on'</span>, <span class="string">'fontsize'</span>,16, <span class="string">'interpreter'</span>, <span class="string">'latex'</span>);
+vidObj = VideoWriter(<span class="string">'20U.avi'</span>);
+vidObj.FrameRate = 60;
+open(vidObj);
+set(gca,<span class="string">'nextplot'</span>,<span class="string">'replacechildren'</span>);
+
+<span class="keyword">for</span> epoch = 1:num_of_epochs
+    eta = eta_0 * exp(-(epoch-1)/lambda_eta);
+    neighborhood_size = round(neighborhood_size_0 * exp(-(epoch-1)/lambda_ns));
+
+    <span class="keyword">for</span> city_idx = randperm(num_of_cities)
+        <span class="comment">% Find winner unit</span>
+        city_coor = city(city_idx,:);
+        diff = repmat(city_coor, num_of_units, 1) - weights;
+        [~, winning_unit] = min(sum(diff.^2, 2));
+
+        <span class="comment">% Neighbors</span>
+        neighbors_idx = padded(winning_unit+neighborhood_size_0<span class="keyword">...</span>
+            -neighborhood_size:winning_unit+neighborhood_size_0<span class="keyword">...</span>
+            +neighborhood_size);
+
+        <span class="comment">% Update mask</span>
+        update_function = zeros(num_of_units, num_of_features);
+        update_function(neighbors_idx, :) = 1;
+
+        weights_old = weights;
+        weights = weights_old + update_function .* (eta * diff);
+
+        <span class="comment">% Plotting</span>
+        tour = [weights; weights(1,:)];
+        plot(tour(:,1),tour(:,2),<span class="string">'c-o'</span>, <span class="string">'LineWidth'</span>,1); hold <span class="string">on</span>;
+        plot(weights(winning_unit,1),weights(winning_unit,2),<span class="string">'.b'</span>,<span class="string">'MarkerSize'</span>, 35);
+        plot(weights(neighbors_idx,1),weights(neighbors_idx,2),<span class="string">'.g-'</span>,<span class="string">'MarkerSize'</span>, 20, <span class="string">'LineWidth'</span>,2);
+        plot(city(:,1),city(:,2),<span class="string">'.m'</span>,<span class="string">'MarkerSize'</span>, 15);
+        plot(city(city_idx,1),city(city_idx,2),<span class="string">'.r'</span>,<span class="string">'MarkerSize'</span>, 35);
+        title(sprintf(<span class="keyword">...</span>
+            <span class="string">'Number of units: %4d, Epoch: %4d, Neighborhood size: %2d, learning rate = %.2f'</span>, <span class="keyword">...</span>
+            num_of_units, epoch, neighborhood_size, eta), <span class="string">'Interpreter'</span>, <span class="keyword">...</span>
+            <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 16);
+        xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 13);
+        ylabel(<span class="string">'$y$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 13);
+        hold <span class="string">off</span>;
+<span class="comment">%         pause(0.000001);</span>
+        frame_index = num_of_cities*(epoch-1)+city_idx;
+        currFrame = getframe(gcf);
+        writeVideo(vidObj,currFrame);
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> (isequal(weights_old, weights) &amp;&amp; isequal(weights, city))
+        fprintf(<span class="string">'Convergence at epoch %f'</span>, epoch);
+        <span class="keyword">break</span>;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+close(vidObj);
+</pre><img vspace="5" hspace="5" src="cyclic_03.png" alt=""> <h2>Conclusions<a name="12"></a></h2><div><ul><li>We could define a convergence criteria, in order to stop the iterations once a solution is found (i.e. the cycle does not change).</li><li>Number of units should be greater than the number of points.</li><li>Decrease of learning rate and neighbourhood size result in a huge performance increase.</li><li>Alternative neighbourhood definitions could be explored, for instance using Gaussian Neighbourhood Level (as we will see in the following exercise).</li></ul></div><pre class="codeinput">close <span class="string">all</span>;
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Cyclic Tour
+
+%%
+set(0, 'DefaultFigurePosition', get(0,'screensize'));
+clc; clear; close all;
+addpath('provided_code');
+
+%% Introduction
+% For a circular structure we to define a different neighborhood function.
+% We can just pad the array of the units with additional units on the
+% sides:
+%
+% $$[9,10|1,2,3,4,5,6,\underbrace{7,8,\mathbf{9},10|1}_{neighborhood},2]$$
+%
+% In this experiment we are supposed to use SOM to find an approximation to 
+% the TSP problem. In this regard, given a set of $N$ points (cities) and 
+% an array of topologycally-arranged units (circular-fashion) we use SOM in 
+% order to find a cycle that goes through each city. Ideally, we want to 
+% use $N$ units such that each of them clusters a specific city and hence a
+% closed cycle is formed.
+%
+% However this is not typically the case and some units might end up
+% not clustering any of the given points. 
+%
+% For this experiment we need to set different parameters, which as
+% proposed in the lab tutorial are set using _trial and error_ methodology.
+% These parameters are:
+%
+% * *Number of units* (we are told to use 10 units, however we explored 
+% other configurations with more than 10 units which actually lead to 
+% "better" results.
+%
+% * *Number of epochs*. We need enough iterations such that we can obtain a
+% reasonable result. However, at a certain point the result remain
+% unvariant. In particular, we note that most of the time the cycle 
+% oscillates periodically between two configurations, so it's better 
+% to switch to a different neighborhood size faster).
+num_of_epochs = 150;
+epochs = 1:num_of_epochs;
+%%
+%
+% * *Learning rate $\eta$*. As the number of epochs increases, we decrease
+% the learning parameter. In particular we decided to use an exponential
+% decay given by 
+%
+% $$\eta = \eta_0 \exp(-t/\lambda_\eta)$$
+%
+% where $\eta_0$ is the initial learning rate, $t$ denotes the epoch number 
+% and $\lambda_\eta$ stands for the decay constant of the learning rate.
+%
+eta_0 = .8;
+lambda_eta = 6*num_of_epochs/8;
+eta = eta_0 * exp(-(epochs-1)/lambda_eta);
+fprintf('eta_0 = %.2f, lambda_eta = %.2f', eta_0, lambda_eta);
+
+%%
+% * *Neighbourhood size (NS)*. We use the proposed definition of 
+% Neighbourhood. In particular, we define a maximum distance, say $d$, such 
+% that only units with indices $k \leq |k_w -d|$ are considered within the 
+% neighbourhood of the winning unit $k_w$. In  this approach, the winning 
+% unit and the neighbouring units are updated equally, using 
+% $w_k^{new} \gets w_k^{old} -\eta (x-w_k)$
+% , where $x$ is a city's
+% coordinates activating the wining unit and $k$ is the winning unit's and 
+% its neighbours unit's indices.
+% Similarly to the learning rate, we decrease 
+% the size of the neighbourhood as the number of iterations increases. We 
+% also use an exponential decay given by  
+%
+% $$NS = round(NS_0 \exp(-t/\lambda_{NS}))$$
+%
+% , where $NS_0$ is the initial neighbour size, $t$ denotes the epoch number 
+% and $\lambda_{NS}$ stands for the decay constant of the neighbour size.
+%
+neighborhood_size_0 = 4;
+lambda_ns = num_of_epochs/4;
+neighborhood_size = round(neighborhood_size_0 * exp(-(epochs-1)/lambda_ns));
+fprintf('neighborhood_size_0 = %d, lambda_ns = %.2f', ...
+    neighborhood_size_0, lambda_ns);
+
+figure(1);
+subplot(1,2,1); plot(eta); grid on;
+title('Learning Rate vs Epoch', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of Epoch', 'Interpreter', 'latex', 'fontsize',14);
+ylabel('$\eta$', 'Interpreter', 'latex', 'fontsize',14);
+
+subplot(1,2,2); stairs(neighborhood_size, 'r'); grid on;
+title('Neighbourhood size vs Epoch', 'Interpreter', 'latex','fontsize',16);
+xlabel('Number of Epoch', 'Interpreter', 'latex', 'fontsize',14);
+ylabel('$NS$', 'Interpreter', 'latex', 'fontsize',14);
+%%
+%
+% Besides this, we have to pay attention to the following consideration:
+%
+% * Randomization of the order in which the cities are considered at every 
+% epoch (avoid possible correlations).
+%
+%% Experiment 
+%
+%%
+% *A) Setup*
+
+cities;
+[num_of_cities, num_of_features] = size(city); 
+
+%% 
+% *B1)Training with 10 units*
+%
+% Let us first consider the case where we use the same number of units as
+% the number of cities.
+
+num_of_units = 10;
+weights = rand(num_of_units, num_of_features);
+padded = [num_of_units - (neighborhood_size_0-1:-1:0), (1 : ...
+    num_of_units), (1:neighborhood_size_0)];
+        
+%%
+%
+% Prepare plot and generation of video and start the iterative algorithm
+%
+figure(2);
+dim = [0.02 0.68 0.3 0.3];
+annotation('textbox',dim,'String',['$\eta_0 =$ '  num2str(eta_0) char(10)...
+    '$\lambda_\eta = $ ' num2str(lambda_eta)],...
+    'FitBoxToText','on', 'fontsize',16, 'interpreter', 'latex');
+vidObj = VideoWriter('10U.avi');
+vidObj.FrameRate = 60;
+open(vidObj);
+set(gca,'nextplot','replacechildren');
+
+for epoch = epochs
+    eta = eta_0 * exp(-(epoch-1)/lambda_eta);
+    neighborhood_size = round(neighborhood_size_0 * exp(-(epoch-1)/...
+        lambda_ns));
+
+    for city_idx = randperm(num_of_cities)
+        % Find winner unit
+        city_coor = city(city_idx,:);
+        diff = repmat(city_coor, num_of_units, 1) - weights;
+        [~, winning_unit] = min(sum(diff.^2, 2));
+
+        % Neighbors
+        neighbors_idx = padded(winning_unit+neighborhood_size_0...
+            -neighborhood_size:winning_unit+neighborhood_size_0...
+            +neighborhood_size);
+
+        % Update mask
+        update_function = zeros(num_of_units, num_of_features);
+        update_function(neighbors_idx, :) = 1;
+        
+        % Update weights
+        weights_old = weights;
+        weights = weights_old + update_function .* (eta * diff);
+        
+        % Plotting
+        tour = [weights; weights(1,:)];
+        plot(tour(:,1),tour(:,2),'c-o', 'LineWidth',1); hold on;
+        plot(weights(winning_unit,1),weights(winning_unit,2),'.b',...
+            'MarkerSize', 35);
+        plot(weights(neighbors_idx,1),weights(neighbors_idx,2),'.g-',...
+            'MarkerSize', 20, 'LineWidth',2);
+        plot(city(:,1),city(:,2),'.m','MarkerSize', 15);
+        plot(city(city_idx,1),city(city_idx,2),'.r','MarkerSize', 35);
+        title(sprintf(...
+            'Number of units: %4d, Epoch: %4d, Neighborhood size: %2d, learning rate = %.2f', ...
+            num_of_units, epoch, neighborhood_size, eta), 'Interpreter', ...
+            'latex', 'Fontsize', 16);
+        xlabel('$x$', 'Interpreter', 'latex', 'Fontsize', 13);
+        ylabel('$y$', 'Interpreter', 'latex', 'Fontsize', 13);  
+        hold off;
+        pause(0.000001);
+        frame_index = num_of_cities*(epoch-1)+city_idx;
+        currFrame = getframe(gcf);
+        writeVideo(vidObj,currFrame);
+    end
+    
+    if isequal(weights_old, weights)
+        fprintf('Convergence at epoch %3d', epoch);
+        break;
+    end
+end
+close(vidObj);
+%% 
+% *B2) Training with 20 units*
+%
+% The results obtained with 10 units are close to the optimal solution,
+% however, sometimes some of the units do not cluster any point leaving the 
+% cycle incomplete (we do not visit some cities). In this regard, we now 
+% increase the number of units, such that we can ensure that _all_ cities 
+% are visited. Once finished, we can obtain the order of visited cities by
+% only looking at the units that cluster a given point.
+%
+
+num_of_units = 20;
+weights = rand(num_of_units, num_of_features);
+padded = [num_of_units - (neighborhood_size_0-1:-1:0), (1 : ...
+    num_of_units), (1:neighborhood_size_0)];
+
+%%
+%
+% Prepare plot and generation of video and start the iterative algorithm
+%
+
+figure(3);
+annotation('textbox',dim,'String',['$\eta_0 =$ '  num2str(eta_0) char(10)...
+    '$\lambda_\eta = $ ' num2str(lambda_eta)],...
+    'FitBoxToText','on', 'fontsize',16, 'interpreter', 'latex');
+vidObj = VideoWriter('20U.avi');
+vidObj.FrameRate = 60;
+open(vidObj);
+set(gca,'nextplot','replacechildren');
+
+for epoch = 1:num_of_epochs
+    eta = eta_0 * exp(-(epoch-1)/lambda_eta);
+    neighborhood_size = round(neighborhood_size_0 * exp(-(epoch-1)/lambda_ns));
+
+    for city_idx = randperm(num_of_cities)
+        % Find winner unit
+        city_coor = city(city_idx,:);
+        diff = repmat(city_coor, num_of_units, 1) - weights;
+        [~, winning_unit] = min(sum(diff.^2, 2));
+
+        % Neighbors
+        neighbors_idx = padded(winning_unit+neighborhood_size_0...
+            -neighborhood_size:winning_unit+neighborhood_size_0...
+            +neighborhood_size);
+
+        % Update mask
+        update_function = zeros(num_of_units, num_of_features);
+        update_function(neighbors_idx, :) = 1;
+
+        weights_old = weights;
+        weights = weights_old + update_function .* (eta * diff);
+
+        % Plotting
+        tour = [weights; weights(1,:)];
+        plot(tour(:,1),tour(:,2),'c-o', 'LineWidth',1); hold on;
+        plot(weights(winning_unit,1),weights(winning_unit,2),'.b','MarkerSize', 35);
+        plot(weights(neighbors_idx,1),weights(neighbors_idx,2),'.g-','MarkerSize', 20, 'LineWidth',2);
+        plot(city(:,1),city(:,2),'.m','MarkerSize', 15);
+        plot(city(city_idx,1),city(city_idx,2),'.r','MarkerSize', 35);
+        title(sprintf(...
+            'Number of units: %4d, Epoch: %4d, Neighborhood size: %2d, learning rate = %.2f', ...
+            num_of_units, epoch, neighborhood_size, eta), 'Interpreter', ...
+            'latex', 'Fontsize', 16);
+        xlabel('$x$', 'Interpreter', 'latex', 'Fontsize', 13);
+        ylabel('$y$', 'Interpreter', 'latex', 'Fontsize', 13);
+        hold off;
+%         pause(0.000001);
+        frame_index = num_of_cities*(epoch-1)+city_idx;
+        currFrame = getframe(gcf);
+        writeVideo(vidObj,currFrame);
+    end
+    if (isequal(weights_old, weights) && isequal(weights, city))
+        fprintf('Convergence at epoch %f', epoch);
+        break;
+    end
+end
+close(vidObj);
+%% Conclusions
+%
+% 
+% * We could define a convergence criteria, in order to stop the iterations
+% once a solution is found (i.e. the cycle does not change).
+% * Number of units should be greater than the number of points.
+% * Decrease of learning rate and neighbourhood size result in a huge
+% performance increase.
+% * Alternative neighbourhood definitions could be explored, for instance
+% using Gaussian Neighbourhood Level (as we will see in the following
+% exercise).
+close all;
+
+##### SOURCE END #####
+--></body></html>
