@@ -29,7 +29,7 @@ for P = 1:size(all_patterns, 1)
     %w = w-diag(diag(w));
     saved = 0;
     for original_pat = patterns'
-        reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,false,true,false);
+        reconstructed_pat_Bias = evolve_net(w_Bias, original_pat, -1,false,true,false);
         if sum(abs(original_pat'-reconstructed_pat_Bias)) == 0
             saved = saved + 1;
         end
@@ -39,7 +39,9 @@ for P = 1:size(all_patterns, 1)
 end
 
 plot(0:pat-1, percentage_vec, 'b+-');
-
+grid on;
+title('Good patterns stored','Interpreter','latex', 'fontsize',16);
+xlabel('number of patterns','Interpreter','latex', 'fontsize',16);
 %% First experiment: 
 % 10% activity
 
@@ -85,7 +87,7 @@ for bias=0:step_val:Max_bias_val
         %w = w-diag(diag(w));
         saved = 0;
         for original_pat = patterns'
-            reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,false,true,false,bias);
+            reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,-1,false,true,false,bias);
             if sum(abs(original_pat'-reconstructed_pat_Bias)) == 0
                 saved = saved + 1;
             end
@@ -94,11 +96,15 @@ for bias=0:step_val:Max_bias_val
         percentage_vec = [percentage_vec saved*100/P];
     end
     hold all
-    plot(0:pat-1, percentage_vec,'LineWidth',2)
+    plot(0:pat-1, percentage_vec,'LineWidth',2);
+    grid on;
     count = count + 1;
     legendInfo{count} = ['bias = ' num2str(bias)];
 end
-legend( legendInfo)
+title('something', 'Interpreter','latex', 'fontsize', 16);
+xlabel('something', 'Interpreter','latex', 'fontsize', 16);
+ylabel('something', 'Interpreter','latex', 'fontsize', 16);
+legend( legendInfo, 'Interpreter','latex', 'fontsize', 16);
 hold off
 
 %% Second experiment
@@ -148,7 +154,7 @@ for bias = 0:step_val:Max_bias_val
             %w = w-diag(diag(w));
             saved = 0;
             for original_pat = patterns'
-                reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,false,true,false,bias);
+                reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,-1,false,true,false,bias);
                 if sum(abs(original_pat'-reconstructed_pat_Bias)) == 0
                     saved = saved + 1;
                 end
@@ -161,9 +167,9 @@ for bias = 0:step_val:Max_bias_val
         count = count + 1;
         legendInfo{count} = ['Activation Percentage = ' num2str(act_perc)];
     end
-    legend( legendInfo)
-    legendInfo = [];
-    title(sprintf('Bias = %d',bias));
+    grid on;
+    legend( legendInfo,'interpreter','latex','fontsize',16);
+    title(sprintf('Bias = %d',bias),'interpreter','latex','fontsize',16);
     hold off
 end
 

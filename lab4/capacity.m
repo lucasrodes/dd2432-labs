@@ -37,6 +37,7 @@ figure;
 for i=1:9
     subplot(3,3,i);
     vis(all_patterns(i, :));
+    title(sprintf('Pattern %d',i), 'Interpreter', 'latex', 'fontsize',16);
 end
 
 rng(1);
@@ -54,8 +55,10 @@ for P = 1:size(all_patterns, 1)
                 successes = successes + 1;
             end
         end
-    figure
-    vis(reconstructed_pat)
+        figure;
+        vis(reconstructed_pat)
+        title(sprintf('Trained with %d patterns, reconstructing noisy pattern %d',P, original_pat), ...
+            'Interpreter', 'latex', 'fontsize',16);
     end
     
     performance = successes / (P * repetitions);
@@ -66,9 +69,9 @@ figure;
 plot(1:size(all_patterns, 1), performances);
 ylim([0, 1]);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16); 
 
 suptitle('9 image patterns');
 %% 25 randomly generated rectangular patterns
@@ -93,6 +96,7 @@ for i = 1:25
     all_patterns(i, :) = pat;
     subplot(5,5,i);
     vis(pat); 
+    title(sprintf('Pattern %d',i), 'Interpreter', 'latex', 'fontsize',16);
     axis off;
 end
 
@@ -124,9 +128,9 @@ figure;
 plot(2:size(all_patterns, 1), performances);
 ylim([0, 1]);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16);
 
 suptitle('25 randomly generated rectangular patterns');
 %% 290 zero centered random patterns
@@ -166,9 +170,9 @@ end
 figure;
 plot(70:15:size(all_patterns, 1), performances);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16);
 
 suptitle('290 zero centered random patterns');
 %% 300 zero centered random patterns
@@ -216,16 +220,16 @@ figure;
 subplot(1,2,1);
 plot(1:size(all_patterns, 1), performances);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16); 
 
 subplot(1,2,2);
 plot(1:size(all_patterns, 1), stables);
 grid on;
-title('Stability of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of training patterns that are stable');
+title('Stability of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of training patterns that are stable', 'Interpreter', 'latex', 'fontsize',16);
 
 suptitle('300 zero centered random patterns');
 %% 300 zero centered random patterns + diagonal suppression
@@ -280,16 +284,16 @@ figure;
 subplot(1,2,1);
 plot(1:size(all_patterns, 1), performances);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16);
 
 subplot(1,2,2);
 plot(1:size(all_patterns, 1), stables);
 grid on;
-title('Stability of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of training patterns that are stable');
+title('Stability of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of training patterns that are stable', 'Interpreter', 'latex', 'fontsize',16);
 
 suptitle('300 zero centered random patterns + diagonal suppression');
 %% 300 NON zero centered random patterns + diagonal suppression
@@ -336,16 +340,16 @@ figure;
 subplot(1,2,1);
 plot(1:size(all_patterns, 1), performances);
 grid on;
-title('Denoising of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of denoised patterns'); 
+title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16);
 
 subplot(1,2,2);
 plot(1:size(all_patterns, 1), stables);
 grid on;
-title('Stability of the memories');
-xlabel('Number of training patterns');
-ylabel('Percent of training patterns that are stable');
+title('Stability of the memories', 'Interpreter', 'latex', 'fontsize',16);
+xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
+ylabel('Percent of training patterns that are stable', 'Interpreter', 'latex', 'fontsize',16);
 
 suptitle('300 NON zero centered random patterns + diagonal suppression');
 %%
