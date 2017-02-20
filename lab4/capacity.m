@@ -54,6 +54,8 @@ for P = 1:size(all_patterns, 1)
                 successes = successes + 1;
             end
         end
+    figure
+    vis(reconstructed_pat)
     end
     
     performance = successes / (P * repetitions);

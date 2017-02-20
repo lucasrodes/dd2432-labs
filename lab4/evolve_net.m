@@ -1,8 +1,11 @@
 % x_start and x_end are column vectors
-function [ x_end, iterations ] = evolve_net(w, x_start, sequential)
+function [ x_end, iterations ] = evolve_net(w, x_start, sequential, bias)
     N = size(w, 1);
     iterations = 0;
     
+    if nargin < 4
+        bias = false;
+    end
     if nargin < 3
         sequential = false;
     end
@@ -39,14 +42,24 @@ function [ x_end, iterations ] = evolve_net(w, x_start, sequential)
         end
         subplot(1,2,1);
         vis(x_end);
-        title(sprintf('Converged iter: %d', iterations));
+        title(sprintf('Converged iter: %d', ions));
     else
         converged = false;
         while not(converged) && iterations < 100
-            x_end = sgn(w * x_start);
+            if bias == false
+                x_end = sgn(w * x_start);
+            else
+                %Bias term is chosen to be the mean of patterns 
+                biais = sum(x_start)/length(x_start);
+                x_end = 0.5 + 0.5 * sgn( (x_start'*w' - biais) );
+            end
             converged = isequal(x_start, x_end);
             iterations = iterations + 1;
-            x_start = x_end;
+            if bias
+                x_start = x_end';
+            else
+                x_start = x_end;
+            end
         end
     end
 end
