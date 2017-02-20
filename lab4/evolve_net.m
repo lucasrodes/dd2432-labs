@@ -61,11 +61,11 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
                 % Convergence criteria
                 if iterations>1
                     s = find(diff(E(1:iterations))~=0);
-                        if isempty(s)
-                            s = iterations;
-                        end
-                        constant_energy = iterations - s(end);
-                    if patterns ~= -1
+                    if isempty(s)
+                        s = iterations;
+                    end
+                    constant_energy = iterations - s(end);
+                    if ~isequal(-1, patterns)
                         [ismem, id] = ismember(x_end', patterns, 'rows');
                         if ismem
                             converged = true;
