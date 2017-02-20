@@ -2,13 +2,19 @@
 % w: is the matrix of weights (symmetric)
 % sequential: Activate it if asynchronous update is wanted
 % bias: Activate it to activate the bias term.
-
 function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
-    sequential, bias)
+    sequential, bias, conv_seek,  bias_val)
+
 
     N = size(w, 1);
     iterations = 0;
     
+    if nargin < 7
+       bias_val = sum(x_start)/length(x_start);
+    end
+    if nargin < 6
+       conv_seek = true;
+    end
     if nargin < 5
         bias = false;
     end
@@ -75,19 +81,21 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
 %                     converged = false;
 %                 end
             end
+            if conv_seek == false
+                return;
+            end
         end
         subplot(1,2,1);
         vis(x_end);
         title(h, 'Interpreter', 'latex', 'Fontsize', 16);
     else
         converged = false;
-        while not(converged) && iterations < 100
+        while not(converged) && iterations < 100 
             if bias == false
                 x_end = sgn(w * x_start);
             else
                 %Bias term is chosen to be the mean of patterns 
-                biais = sum(x_start)/length(x_start);
-                x_end = 0.5 + 0.5 * sgn( (x_start'*w' - biais) );
+                x_end = 0.5 + 0.5 * sgn( (x_start'*w' - bias_val) );
             end
             converged = isequal(x_start, x_end);
             iterations = iterations + 1;
@@ -96,7 +104,9 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
             else
                 x_start = x_end;
             end
+            if conv_seek == false
+                return;
+            end
         end
     end
-end
 
