@@ -57,24 +57,35 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
                         'Fontsize', 16);
                     pause(0.05);
                 end
+                h = sprintf('Finished, %d iterations', iterations);
                 % Convergence criteria
                 if iterations>1
                     s = find(diff(E(1:iterations))~=0);
-                    if isempty(s)
-                        s = iterations;
-                    end
-                    constant_energy = iterations - s(end);
-                    [ismem, id] = ismember(x_end', patterns, 'rows');
-                    if ismem
-                        converged = true;
-                        h = sprintf('Match found with pattern p%d at iteration %d', id, iterations);
-                        break;
-                    elseif constant_energy>N/4
-                        h = sprintf('Converged, but no match found! at iteration %d', iterations);;
-                        converged = true;
-                        break;
+                        if isempty(s)
+                            s = iterations;
+                        end
+                        constant_energy = iterations - s(end);
+                    if patterns ~= -1
+                        [ismem, id] = ismember(x_end', patterns, 'rows');
+                        if ismem
+                            converged = true;
+                            h = sprintf('Match found with pattern p%d at iteration %d', id, iterations);
+                            break;
+                        elseif constant_energy>N/4
+                            h = sprintf('Converged, but no match found! at iteration %d', iterations);;
+                            converged = true;
+                            break;
+                        else
+                            converged = false;
+                        end
                     else
-                        converged = false;
+                        if constant_energy>N/4
+                            h = sprintf('Converged after %d iterations', iterations);;
+                            converged = true;
+                            break;
+                        else
+                            converged = false;
+                        end
                     end
                 end
 %                 if old_x ~= x_end(i)
