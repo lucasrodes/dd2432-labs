@@ -97,6 +97,7 @@ rng(3);
 evolve_net(w, p24', patterns, true);
 %%
 % *noise going to the negative of p3*
+%
 % We notice that if p3 is an attractor, also its negative must be an
 % attractor because the energy function is symmetric.
 rng(1);

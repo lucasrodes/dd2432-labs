@@ -31,7 +31,7 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
     if sequential
         converged = false;
         x_end = x_start;
-        figure(1);
+        figure;
         E = zeros(1, 10000);
         while not(converged) && iterations < 10000
 %             converged = true;
@@ -61,7 +61,7 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
                 if iterations>1
                     s = find(diff(E(1:iterations))~=0);
                     if isempty(s)
-                        s = iterations
+                        s = iterations;
                     end
                     constant_energy = iterations - s(end);
                     [ismem, id] = ismember(x_end', patterns, 'rows');
