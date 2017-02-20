@@ -1,4 +1,8 @@
 % x_start and x_end are column vectors
+% w: is the matrix of weights (symmetric)
+% sequential: Activate it if asynchronous update is wanted
+% bias: Activate it to activate the bias term.
+
 function [ x_end, iterations ] = evolve_net(w, x_start, sequential, bias)
     N = size(w, 1);
     iterations = 0;
