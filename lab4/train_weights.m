@@ -5,6 +5,7 @@ function [ w ] = train_weights(patterns, suppress_diagonal, bias)
     [~, N] = size(patterns);
    
     if nargin > 2 && bias
+         %If we use the bias term we dont have to divide by N
          w = patterns' * patterns;
     elseif nargin>1 && suppress_diagonal
         w = patterns' * patterns ./ N;
