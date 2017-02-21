@@ -2,6 +2,9 @@
 % w: is the matrix of weights (symmetric)
 % sequential: Activate it if asynchronous update is wanted
 % bias: Activate it to activate the bias term.
+% conv_seek: if true, the code will be iterated untill convergenge. If
+% false it will be only iterated once.
+% bias_val: sets the bias value
 function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
     sequential, bias, conv_seek,  bias_val)
 
@@ -10,6 +13,7 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
     iterations = 0;
     
     if nargin < 7
+        %Used when bias = true but no bias values was given
        bias_val = sum(x_start)/length(x_start);
     end
     if nargin < 6
@@ -105,17 +109,20 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
             if bias == false
                 x_end = sgn(w * x_start);
             else
-                %Bias term is chosen to be the mean of patterns 
+                %Evolution formula for bias term
                 x_end = 0.5 + 0.5 * sgn( (x_start'*w' - bias_val) );
             end
             converged = isequal(x_start, x_end);
             iterations = iterations + 1;
             if bias
+                %Need as the input pattern has to be transposed
                 x_start = x_end';
             else
                 x_start = x_end;
             end
             if conv_seek == false
+                %If we dont want to seek the convergence but only iterate
+                %once, we return. 
                 return;
             end
         end

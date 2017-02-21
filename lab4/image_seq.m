@@ -5,12 +5,11 @@ set(0, 'DefaultFigurePosition', get(0,'screensize'));
 clc; clear; close all;
 
 %% Load patterns and visualization
-%
 % We now load the file _pict.m_ which contains nine patterns, obtained from
 % nine pictures of 1024 pixels. Thus, we will use a 1024-neuron network. 
 pict;
 
-%
+%%
 % Let us visualize some of the patterns from the collection. Both including
 % patterns used in the training and others which are distorted versions of
 % these.
@@ -107,3 +106,6 @@ evolve_net(w, noise', patterns, true);
 rng(1);
 evolve_net(w, p22', patterns, true);
 evolve_net(w, -p22', patterns, true);
+
+%%
+close all;

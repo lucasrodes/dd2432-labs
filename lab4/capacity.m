@@ -3,7 +3,7 @@
 %%
 set(0, 'DefaultFigurePosition', get(0,'screensize'));
 clc; clear; close all;
-
+addpath('provided_code');
 %% Our procedure
 %
 % <html>
@@ -55,10 +55,6 @@ for P = 1:size(all_patterns, 1)
                 successes = successes + 1;
             end
         end
-        figure;
-        vis(reconstructed_pat)
-        title(sprintf('Trained with %d patterns, reconstructing noisy pattern %d',P, original_pat), ...
-            'Interpreter', 'latex', 'fontsize',16);
     end
     
     performance = successes / (P * repetitions);
