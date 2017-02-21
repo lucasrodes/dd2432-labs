@@ -312,10 +312,11 @@ for bias = 0:step_val:Max_bias_val
 end
 %Plotting
 surf(bias_vec,per_vec,learning_capacity_vec);
-title('Relation between Bias, Activity level and Learning capacity')
-xlabel('Bias');
-ylabel(' Activity level (%) ');
-zlabel(' Learning capacity ');
+title('Relation between Bias, Activity level and Learning capacity',...
+    'Interpreter','latex', 'fontsize',16);
+xlabel('Bias','Interpreter','latex', 'fontsize',16);
+ylabel(' Activity level (%) ','Interpreter','latex', 'fontsize',16);
+zlabel(' Learning capacity ','Interpreter','latex', 'fontsize',16);
 
 
 
