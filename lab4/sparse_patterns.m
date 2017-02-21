@@ -4,40 +4,6 @@
 set(0, 'DefaultFigurePosition', get(0,'screensize'));
 clc; clear; close all;
 
-%% First test - study the maximum saving capacity of the network using the bias
-
-clc;clear;
-
-N = 200;
-P = 100;
-biais = 0.0;
-% Create P patterns with a biais 
-all_patterns = round(rand(P, N));
-
-%We need to compute the mean of all_patterns
-[pat, N] = size(all_patterns);
-m = sum(sum(all_patterns))/(N*pat);
-
-rng(1);
-percentage_vec =[];
-
-for P = 1:size(all_patterns, 1)
-    patterns = all_patterns(1:P,:);
-    w_Bias = train_weights(patterns - m,false,true);
-
-    saved = 0;
-    for original_pat = patterns'
-        reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,[],false,true,false);
-        if sum(abs(original_pat'-reconstructed_pat_Bias)) == 0
-            saved = saved + 1;
-        end
-    end
-    % Add percentage of good pattern stored
-    percentage_vec = [percentage_vec saved*100/P];
-end
-
-plot(0:pat-1, percentage_vec, 'b+-');
-
 %% First experiment: 
 % 10% activity
 
@@ -97,6 +63,9 @@ for bias=0:step_val:Max_bias_val
     legendInfo{count} = ['bias = ' num2str(bias)];
 end
 legend( legendInfo)
+title('Learning capacity evolution depending on the bias value');
+xlabel('Number of patterns');
+ylabel(' Percentage learnt ');
 hold off
 
 %% Second experiment
