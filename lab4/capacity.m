@@ -95,6 +95,7 @@ for i = 1:25
     title(sprintf('Pattern %d',i), 'Interpreter', 'latex', 'fontsize',16);
     axis off;
 end
+suptitle('25 randomly generated rectangular patterns');
 
 print_pattern_stat(all_patterns);
 noisy_pixels = 100;
@@ -128,7 +129,6 @@ title('Denoising of the memories', 'Interpreter', 'latex', 'fontsize',16);
 xlabel('Number of training patterns', 'Interpreter', 'latex', 'fontsize',16);
 ylabel('Percent of denoised patterns', 'Interpreter', 'latex', 'fontsize',16);
 
-suptitle('25 randomly generated rectangular patterns');
 %% 290 zero centered random patterns
 % Now instead of images, we train the network on many patterns that are
 % randomly generated from a zero centered distribution. This means that the
