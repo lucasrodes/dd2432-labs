@@ -104,7 +104,7 @@ for x_in = patterns_dist'
     end
 end
 
-% 
+%%
 % We observe that if the patterns have 1-3 flipped bits the network 
 % reconstructs the right pattern. If the number of distorted bits is 4 or 
 % more the network fails to reconstruct.

@@ -20,7 +20,7 @@ clc; clear; close all;
 %
 pict;
 
-%
+%%
 % We now use the Hebbian Rule to learn the weights. We will begin by only
 % using the first three patterns to train, i.e. p1, p2 and p3.rng(1);
 plur = ['s',''];
@@ -36,6 +36,7 @@ w = train_weights(patterns);
 fprintf('Energy at:\n\tp1 =\t%f\n\tp11=\t%f\n', - p1 * w * p1', - p11 * w * p11')
 fprintf('Energy at:\n\tp2 =\t%f\n\tp22=\t%f\n', - p2 * w * p2', - p22 * w * p22')
 
+%%
 % As one can expect, the energy at the original (training) patterns is
 % lower than their distorted versions, since the training patterns are
 % minima of the energy function. Nonetheless, this might not be always the
@@ -56,3 +57,6 @@ evolve_net(w, p1', -1, true);
 % Now, the energy goes down monotonically.
 w = .5 * (w + w');
 evolve_net(w, p1', -1, true);
+
+%%
+close all;

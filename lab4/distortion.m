@@ -36,10 +36,13 @@ for n = noisy_pixels
     figure;
     x_in = flip_img(p3, n);
     subplot(1,2,1); vis(x_in);
-    title(sprintf('Flipping %d/%d = %.2f%% of the pixels of p3',...
+    title(sprintf('Flipping %d/%d = %.2f\\%% of the pixels of p3',...
         n, N, n/N*100), 'Interpreter', 'latex', 'Fontsize', 16);
     [x_out, it] = evolve_net(w, x_in', patterns);
     subplot(1,2,2); vis(x_out);
     title(sprintf('Result after %d iterations', it), 'Interpreter',...
         'latex', 'Fontsize', 16);
 end
+
+%%
+close all;

@@ -14,20 +14,20 @@ P = 100;
 
 act_perc = 0.1;
 
-%lets play with the value of the bias
+% lets play with the value of the bias
 bias = 0;
 
 % Create P patterns with only a 10% of activation
 all_patterns = zeros(P, N);
 
-%Generate a image with a certain percentage of activation
+% Generate a image with a certain percentage of activation
 for i=1:P
     index = randperm(N);
     index = index(1:round(N*act_perc));
     all_patterns(i,index) = 1;
 end
 
-%We need to compute the mean of all_patterns
+% We need to compute the mean of all_patterns
 [pat, N] = size(all_patterns);
 m = sum(sum(all_patterns))/(N*pat);
 
@@ -69,8 +69,8 @@ ylabel(' Percentage learnt ');
 hold off
 
 %% Second experiment
-%The objective now is to study the performance when the activity percentage
-%is even smaller
+% The objective now is to study the performance when the activity percentage
+% is even smaller
 
 clc;clear;
 
@@ -79,11 +79,11 @@ P = 100;
 
 rng(1);
 
-%Bias
+% Bias
 Max_bias_val = 15;
 step_val = 3;
 
-%Act percentage 
+% Act percentage 
 initial_val = 0.01;
 step_act = 0.01;
 final_act_val = 0.05
@@ -95,14 +95,14 @@ for bias = 0:step_val:Max_bias_val
     count = 0;
     all_patterns = zeros(P, N);
     for act_perc = initial_val:step_act:final_act_val
-        %Generate a image with a certain percentage of activation
+        % Generate a image with a certain percentage of activation
         for i=1:P
             index = randperm(N);
             index = index(1:round(N*act_perc));
             all_patterns(i,index) = 1;
         end
 
-        %We need to compute the mean of all_patterns
+        % We need to compute the mean of all_patterns
         [pat, N] = size(all_patterns);
         m = sum(sum(all_patterns))/(N*pat);
 
@@ -112,7 +112,7 @@ for bias = 0:step_val:Max_bias_val
             patterns = all_patterns(1:P,:);
             w_Bias = train_weights(patterns - m,false,true);
             % Transform w gto resist to noise
-            %w = w-diag(diag(w));
+            % w = w-diag(diag(w));
             saved = 0;
             for original_pat = patterns'
                 reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,[],false,true,false,bias);
@@ -146,11 +146,11 @@ P = 100;
 rng(1);
 
 size_m = 16;
-%Bias
+% Bias
 Max_bias_val = 16;
 step_val = (Max_bias_val)/size_m;
 
-%Act percentage 
+% Act percentage 
 initial_val = 0.01;
 final_act_val = 0.17
 step_act = -(initial_val-final_act_val)/size_m;
@@ -160,7 +160,7 @@ bias_vec = [];
 per_vec = [];
 learning_capacity_vec = zeros(size_m,size_m);
 
-%Counters for plot building
+% Counters for plot building
 count_bias = 1;
 count_per = 1; 
 
@@ -176,7 +176,7 @@ for bias = 0:step_val:Max_bias_val
             all_patterns(i,index) = 1;
         end
 
-        %We need to compute the mean of all_patterns
+        % We need to compute the mean of all_patterns
         [pat, N] = size(all_patterns);
         m = sum(sum(all_patterns))/(N*pat);
 
@@ -186,7 +186,7 @@ for bias = 0:step_val:Max_bias_val
             patterns = all_patterns(1:P,:);
             w_Bias = train_weights(patterns - m,false,true);
             % Transform w gto resist to noise
-            %w = w-diag(diag(w));
+            % w = w-diag(diag(w));
             saved = 0;
             for original_pat = patterns'
                 reconstructed_pat_Bias = evolve_net(w_Bias, original_pat,[],false,true,false,bias);
