@@ -5,11 +5,12 @@ set(0, 'DefaultFigurePosition', get(0,'screensize'));
 clc; clear; close all;
 addpath('provided_code');
 %% First experiment: 
-%The objective is to study how the addition of a bias term along with the
-%use of binary representation instead of the [-1,1] affects the storing
-%capacity of the network, when the active values of the patterns are really
-%sparse.
-
+%
+% The objective is to study how the addition of a bias term along with the
+% use of binary representation instead of the [-1,1] affects the storing
+% capacity of the network, when the active values of the patterns are really
+% sparse.
+%
 % We are first experimenting how does the capacity evolves depending on the
 % value of eta for a sparse value of 10% activity 
 
@@ -98,11 +99,12 @@ ylabel(' Percentage learnt ', 'Interpreter','latex', 'fontsize', 16);
 hold off
 
 %% Second experiment
-%The objective is to study how the addition of a bias term along with the
-%use of binary representation instead of the [-1,1] affects the storing
-%capacity of the network, when the active values of the patterns are really
-%sparse.
-
+%
+% The objective is to study how the addition of a bias term along with the
+% use of binary representation instead of the [-1,1] affects the storing
+% capacity of the network, when the active values of the patterns are really
+% sparse.
+% 
 % Now we want to check how does the storing capacity evolves depending on
 % the sparse parameter and the bias term. 
 
@@ -200,11 +202,12 @@ for bias = 0:step_val:Max_bias_val
 end
 
 %% Third experiment - 3D correlation
-%The objective is to study how the addition of a bias term along with the
-%use of binary representation instead of the [-1,1] affects the storing
-%capacity of the network, when the active values of the patterns are really
-%sparse.
-
+%
+% The objective is to study how the addition of a bias term along with the
+% use of binary representation instead of the [-1,1] affects the storing
+% capacity of the network, when the active values of the patterns are really
+% sparse.
+% 
 % Now we want to study the relation between the bias, the sparse value and
 % the storing capacity all together
 
@@ -317,7 +320,6 @@ title('Relation between Bias, Activity level and Learning capacity',...
 xlabel('Bias','Interpreter','latex', 'fontsize',16);
 ylabel(' Activity level (%) ','Interpreter','latex', 'fontsize',16);
 zlabel(' Learning capacity ','Interpreter','latex', 'fontsize',16);
-
 
 
 %%

@@ -59,7 +59,6 @@ function [ x_end, iterations ] = evolve_net(w, x_start, patterns, ...
                         'Fontsize', 16);
                     ylabel('Energy', 'Interpreter', 'latex',...
                         'Fontsize', 16);
-                    pause(0.05);
                 end
                 h = sprintf('Finished, %d iterations', iterations);
                 % Convergence criteria
