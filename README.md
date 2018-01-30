@@ -1,6 +1,6 @@
 # dd2432-labs
 
- ⚠️ **Dear KTH ANN students... Please try to implement the labs first by yourself. You may use our code and work to get inspiration, but remember the [KTH Code of Honor](https://www.kth.se/en/csc/utbildning/hederskodex/inledning-1.17237)**
+ ⚠️ **Dear KTH ANN students... Please try to implement the labs first by yourself. Do remember the [KTH Code of Honor](https://www.kth.se/en/csc/utbildning/hederskodex/inledning-1.17237)**
  
 ⭐️ **Also, if our work helps you out, consider starring it.** 
 
